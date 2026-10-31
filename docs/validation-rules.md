@@ -17,12 +17,16 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 | 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11     |
 | ISBN     | `isbn`           | 必須・ハイフン無しの数字 13 桁・ユニーク             | `required`, `digits:13`, `unique:books,isbn`                       | ISBNの桁数と一意性                | Q-11     |
 | 出版日   | `published_date` | 必須・日付（未来の日付も可）                         | `required`, `date`                                                 | 有効な日付                        | Q-11     |
-| 説明     | `description`    | 任意・文字数上限なし                                 | `nullable`, `string`                                               | －                                | Q-11     |
-| 画像URL  | `image_url`      | 任意・URL 形式                                       | `nullable`, `url`                                                  | 指定された場合は URL 形式         | Q-11     |
+| 説明     | `description`    | 任意・2000 文字以内                                  | `nullable`, `string`, `max:2000`                                   | －                                | Q-11     |
+| 画像URL  | `image_url`      | 任意・URL 形式・255 文字以内                         | `nullable`, `url`, `max:255`                                       | 指定された場合は URL 形式         | Q-11     |
 | ジャンル | `genres`         | 必須・1 つ以上                                       | `required`, `array`, `min:1`                                       | 1つ以上選択                       | Q-11     |
 |          | `genres.*`       | 存在するジャンルのみ                                 | `integer`, `exists:genres,id`                                      | －                                | Q-11     |
 
 編集のときの違い：ISBN の一意性チェックから自分自身を除く（`Rule::unique('books', 'isbn')->ignore($book)`）。要件「書籍編集」に記載あり。
+
+説明の上限：DB の列（`text`、どんな文字でも 16,000 文字ほどまで入る）に入りきらない値は、保存のときに DB エラー（500 エラー）になるため、入力チェックで上限を付ける。書籍の紹介文としては、2000 文字で足りる見込み。
+
+画像URLの上限：DB の列（`string`、255 文字）に入りきらない値は、保存のときに DB エラー（500 エラー）になるため、入力チェックで 255 文字までに止める。書籍の表紙画像の URL は、よく使われる配信元（openBD・Google Books など）でも 130 文字ほどに収まるため、255 文字で足りる見込み。
 
 ## 公開API 書籍登録・書籍編集
 

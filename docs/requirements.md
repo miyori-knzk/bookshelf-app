@@ -84,6 +84,92 @@ PHP HTML CSS
 | ★ DR09 | ★ 読書計画     | ユーザーが書籍ごとに「いつまでに読むか」を計画するレコード | 計画者、対象書籍、期日、計画状態、関連する日時情報                                                         | （テーブル名・構造は自分で設計する） | ★ 応用    |
 | ★ DR10 | ★ 通知         | 読書計画リマインダーの通知レコード                         | 受信者、通知種別、通知内容、既読状態                                                                       | Laravel 標準の通知機能を使用する     | ★ 応用    |
 
+## シーディング
+
+基本機能で必要になる部分のみ記載。
+
+### UserSeeder
+
+users テーブルに初期ユーザーを5件登録する。
+
+- name: 山田太郎, email: yamada@example.com, password: password
+- name: 鈴木花子, email: suzuki@example.com, password: password
+- name: 田中一郎, email: tanaka@example.com, password: password
+- name: 佐藤美咲, email: sato@example.com, password: password
+- name: 高橋健太, email: takahashi@example.com, password: password
+
+`firstOrCreate` を使用し、email の重複を防ぐこと。
+パスワードは `Hash::make()` を使用してハッシュ化すること。
+
+### GenreSeeder
+
+genres テーブルにジャンルを固定で10件投入する。
+
+内容: 「小説」「ビジネス」「技術書」「自己啓発」「エッセイ」「歴史」「科学」「芸術」「料理」「旅行」
+
+`firstOrCreate` を使用し、name の重複を防ぐこと。
+
+### BookSeeder
+
+books テーブルに書籍データを11件投入する。
+登録者は `User::first()`（山田太郎）とする。
+
+1. 吾輩は猫である / 夏目漱石 / ISBN:9784101010014 / 1905-01-01 / ジャンル: 小説
+2. 人を動かす / D・カーネギー / ISBN:9784422100524 / 1936-10-01 / ジャンル: ビジネス, 自己啓発
+3. リーダブルコード / Dustin Boswell / ISBN:9784873115658 / 2012-06-23 / ジャンル: 技術書
+4. 7つの習慣 / スティーブン・R・コヴィー / ISBN:9784863940246 / 2013-08-30 / ジャンル: ビジネス, 自己啓発
+5. 坊っちゃん / 夏目漱石 / ISBN:9784101010021 / 1906-04-01 / ジャンル: 小説
+6. サピエンス全史 / ユヴァル・ノア・ハラリ / ISBN:9784309226712 / 2016-09-08 / ジャンル: 歴史, 科学
+7. Clean Code / Robert C. Martin / ISBN:9784048930598 / 2017-12-18 / ジャンル: 技術書
+8. 嫌われる勇気 / 岸見一郎・古賀史健 / ISBN:9784478025819 / 2013-12-13 / ジャンル: 自己啓発
+9. 火花 / 又吉直樹 / ISBN:9784163902302 / 2015-03-11 / ジャンル: 小説
+10. FACTFULNESS / ハンス・ロスリング / ISBN:9784822289607 / 2019-01-11 / ジャンル: ビジネス, 科学
+11. コンテナ物語 / マルク・レビンソン / ISBN:9784822251468 / 2007-01-18 / ジャンル: ビジネス, 歴史
+
+各書籍に description と image_url を設定すること。
+image_url は `https://placehold.co/200x300/e2e8f0/475569?text={番号}` 形式で固定（{番号} は 1〜11）。
+`firstOrCreate`（ISBN重複防止）と `genres()->sync()` を使用。
+
+### ReviewSeeder
+
+reviews テーブルにレビューデータを32件投入する。
+
+5人のユーザーが11冊の書籍に対してレビューを投稿。
+rating は 3〜5 の範囲。
+各書籍に2〜4件のレビューを配分。
+具体的なコメント内容を設定すること。
+
+`create` を使用。
+
+### FavoriteSeeder
+
+favorites テーブルにお気に入りデータを投入する。
+
+各ユーザーに3〜5冊のお気に入りを設定。
+`syncWithoutDetaching` を使用。
+
+### ReviewLikeSeeder
+
+review_likes テーブルにいいねデータを投入する。
+
+各レビューに0〜3人のユーザーがいいね（自分のレビューを除く）。
+`syncWithoutDetaching` を使用。
+
+### DatabaseSeeder
+
+上記 Seeder を DatabaseSeeder の `run()` で依存関係を考慮した順番に呼び出す。
+
+実行順:
+
+1. UserSeeder
+2. GenreSeeder
+3. BookSeeder
+4. ReviewSeeder
+5. FavoriteSeeder
+6. ReviewLikeSeeder
+
+`sail artisan db:seed` でまとめて投入できるようにする。
+
 ## APIエンドポイント一覧
 
 | HTTPメソッド | URI                  | 説明               | 認証 | 認証（応用）                         |
@@ -261,7 +347,7 @@ PHP HTML CSS
 
 - 応用機能で必要となるバッチ処理は Laravel の Schedule + Console Command を使用して実装する
 
-### Database Transaction
+### ★Database Transaction
 
 - 複数の SQL 文を 1 単位で扱う処理（例: あるレコード削除時に関連レコードも同時に削除する処理）で `DB::transaction()` を使用して原子化する
 
