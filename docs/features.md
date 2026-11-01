@@ -4,6 +4,20 @@
 今回の範囲は **基本機能のみ**。★応用機能は「今回作らないもの」に記載する。
 未確定の点は `docs/questions.md` の確認事項（Q-xx）を参照。
 
+## 設計書
+
+| 種類     | 設計書                        | 内容                           |
+| -------- | ----------------------------- | ------------------------------ |
+| 画面     | `docs/screen-list.md`         | 画面一覧                       |
+|          | `docs/screen-transitions.md`  | 画面遷移図                     |
+|          | `docs/screen-items.md`        | 画面項目定義                   |
+|          | `docs/screen-input-checks.md` | 入力チェックとエラーメッセージ |
+| データ   | `docs/er-diagram.md`          | ER図                           |
+|          | `docs/table-definitions.md`   | テーブル定義書                 |
+|          | `docs/crud-matrix.md`         | CRUD表                         |
+| そのほか | `docs/questions.md`           | 確認事項                       |
+|          | `docs/validation-rules.md`    | バリデーションルール           |
+
 ## 機能一覧
 
 ### 書籍

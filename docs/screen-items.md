@@ -168,6 +168,8 @@
 | `User`   | `favoriteBooks` | `Book`（多対多）  | `books/show`（お気に入り登録済みかの判定）                           |
 | `User`   | `likedReviews` | `Review`（多対多） | `books/show`（いいね済みかの判定）                                   |
 
+テーブルとのつながりは `docs/er-diagram.md` の「モデルのリレーション」を参照。
+
 ビューは次の集計値も使う。コントローラーで、上のリレーション名を指定して作る。
 
 | 値                   | 作り方                            | 使っているビュー                |
