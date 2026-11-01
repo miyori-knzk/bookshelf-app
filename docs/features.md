@@ -15,6 +15,12 @@
 | データ   | `docs/er-diagram.md`          | ER図                           |
 |          | `docs/table-definitions.md`   | テーブル定義書                 |
 |          | `docs/crud-matrix.md`         | CRUD表                         |
+| 処理     | `docs/permission-matrix.md`   | 権限マトリクス                 |
+|          | `docs/routing.md`             | ルーティング                   |
+|          | `docs/api-spec.md`            | 公開API 仕様                   |
+|          | `docs/state-transitions.md`   | 状態遷移図（基本機能では作らない） |
+|          | `docs/sequence-diagrams.md`   | シーケンス図                   |
+|          | `docs/error-handling.md`      | 例外方針                       |
 | そのほか | `docs/questions.md`           | 確認事項                       |
 |          | `docs/validation-rules.md`    | バリデーションルール           |
 
