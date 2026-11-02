@@ -23,6 +23,8 @@
 |          | `docs/error-handling.md`      | 例外方針                       |
 | そのほか | `docs/questions.md`           | 確認事項                       |
 |          | `docs/validation-rules.md`    | バリデーションルール           |
+|          | `docs/acceptance-criteria.md` | 受け入れ条件                   |
+|          | `docs/test-viewpoints.md`     | テスト観点                     |
 
 ## 機能一覧
 
