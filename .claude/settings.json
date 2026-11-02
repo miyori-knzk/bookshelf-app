@@ -5,7 +5,24 @@
       "Read(./.env.local)",
       "Read(./.env.*.local)",
       "Read(./.env.production)",
-      "Read(./.env.testing)"
+      "Read(./.env.testing)",
+      "Edit(./docs/requirements.md)",
+      "Edit(./resources/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && grep -qE '\"file_path\" *: *\"[^\"]*\\.php\"' && { out=$(./vendor/bin/sail test 2>&1) || { echo \"$out\" >&2; exit 2; }; } || true",
+            "timeout": 300,
+            "statusMessage": "テストを実行中..."
+          }
+        ]
+      }
     ]
   }
 }

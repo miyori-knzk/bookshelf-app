@@ -15,8 +15,10 @@ Sail（Docker）上で動かす。`mysql`・phpMyAdmin（`http://localhost:8080`
 
 ```bash
 ./vendor/bin/sail up -d                  # 起動（アプリは http://localhost）
-vendor/bin/pint                          # コミット前に必ず実行（整形してからコミット）
+vendor/bin/pint                          # コミット前に実行（ユーザーが行う）
 ```
+
+**コミットする前に、ユーザーへ「`vendor/bin/pint` を実行してください」と伝える。** Claude は pint を自分では実行しない（実行すると、触っていないファイルまで整形されるため）。
 
 `.env` は読まない（`.claude/settings.json` で拒否している。`.env.local`・`.env.production`・`.env.testing` なども同じ）。設定値を確認したいときは `.env.example` を見る。
 
@@ -76,6 +78,6 @@ Web と公開API の 2 系統を、同じモデルの上に置く。
 
 本文には次を載せる。
 
-- テストの実行結果（`sail artisan test` の結果）
+- テストの実行結果（`./vendor/bin/sail test` の結果）
 - 受け入れ条件（`docs/acceptance-criteria.md` の AC-x-x）それぞれの判定。その PR で対象にした行すべてについて、合否を載せる
 - 最後に `Closes #<イシュー番号>` を入れる
