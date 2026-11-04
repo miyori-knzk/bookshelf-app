@@ -152,16 +152,16 @@
 
 | ID | 受け入れ条件 | 前提 |
 | --- | --- | --- |
-| AC-14-1 | ログイン中にナビゲーションのユーザー名を押して「ログアウト」を押すと、書籍一覧へ移動し、ナビゲーションに「ログイン」「新規登録」が表示される | Q-07・Q-08 |
+| AC-14-1 | ログイン中にナビゲーションのユーザー名を押して「ログアウト」を押すと、ログイン画面へ移動し、ナビゲーションに「ログイン」「新規登録」が表示される | Q-07・Q-08 |
 | AC-14-2 | ログアウトした後に `/favorites` を URL 欄に入力して開くと、ログイン画面へ移動する | Q-10 |
 
 ## 15. 公開API
 
 | ID | 受け入れ条件 | 前提 |
 | --- | --- | --- |
-| AC-15-1 | ブラウザで `/api/v1/books` を開くと、JSON が表示され、`data` に書籍が 10 件、`meta.total` が 11 で、各書籍に `genres`・`reviews_avg_rating`・`reviews_count` が入り、各書籍の `user` に `id` と `name` だけが入り、メールアドレスは入っていない | Q-27・Q-58-1・Q-58-4 |
+| AC-15-1 | ブラウザで `/api/v1/books` を開くと、JSON が表示され、`data` に書籍が 11 件、`meta.total` が 11 で、各書籍に `genres`・`reviews_avg_rating`・`reviews_count` が入り、各書籍の `user` に `id` と `name` だけが入り、メールアドレスは入っていない | Q-27・Q-58-1・Q-58-4 |
 | AC-15-2 | ブラウザで `/api/v1/books?keyword=夏目&genre_id=1` を開くと、夏目漱石の「吾輩は猫である」と「坊っちゃん」の 2 件だけが返る | Q-43・Q-55 |
-| AC-15-3 | ブラウザで `/api/v1/books/1` を開くと、書籍の項目に `genres` と `reviews` が入り、`reviews` の各レビューの `user` に `id` と `name` だけが入っている | Q-58-2・Q-58-3・Q-58-4 |
+| AC-15-3 | ブラウザで `/api/v1/books/1` を開くと、書籍の項目に `genres`・`reviews_avg_rating`・`reviews_count`・`reviews` が入り、`reviews` の各レビューの `user` に `id` と `name` だけが入っている | Q-58-2・Q-58-3・Q-58-4 |
 | AC-15-4 | Postman などで `GET /api/v1/books/9999` を送ると、ステータスが 404 になり、`message` が「書籍が見つかりません。」になる | Q-53 |
 | AC-15-5 | Postman などで `POST /api/v1/books` に、`user_id: 2`・未登録の ISBN・そのほかの必須項目・`genres: [1]` を JSON で送ると、ステータスが 201 になり、本文の `data.user.name` が「鈴木花子」になる | Q-26・Q-57 |
 | AC-15-6 | `POST /api/v1/books` に、`title` を除き、`isbn` を 12 桁にして送ると、ステータスが 422 になり、`errors.title` に「タイトルは必須です。」、`errors.isbn` に「ISBNは13桁の数字で入力してください。」が入る | Q-28・Q-40 |

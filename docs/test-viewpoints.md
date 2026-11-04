@@ -54,7 +54,7 @@
 | TP-4-3 | レビューが新しい順に全件出る（Q-14・Q-50） | 正常系 | `docs/questions.md` |
 | TP-4-4 | レビューが 0 件のとき「まだレビューはありません。」が出る | 境界値 | `docs/screen-items.md` |
 | TP-4-5 | 投稿日が日本時間の日付で出る（Q-51） | 境界値 | `docs/questions.md` |
-| TP-4-6 | コメントなしでレビューを投稿でき、一覧にコメント欄が出ない | 正常系 | `docs/validation-rules.md`、`docs/screen-items.md` |
+| TP-4-6 | コメントなしで投稿すると、書籍詳細に戻り、メッセージと選んだ評価が残る（Q-21） | 異常系 | `docs/validation-rules.md`、`docs/screen-items.md` |
 | TP-4-7 | 同じ人が同じ書籍に 2 件以上投稿できる（Q-20） | 正常系 | `docs/er-diagram.md` |
 | TP-4-8 | 評価を選ばずに投稿すると、書籍詳細に戻り、メッセージと入力したコメントが残る | 異常系 | `docs/screen-input-checks.md` |
 | TP-4-9 | 評価は 1・5 で通り、0・6 と数字以外を弾く | 境界値 | `docs/validation-rules.md` |
@@ -113,7 +113,7 @@
 | --- | --- | --- | --- |
 | TP-7-1 | 書籍名と、評価・コメントの初期値が入っている | 正常系 | `docs/screen-list.md` |
 | TP-7-2 | 更新すると、そのレビューの書籍の書籍詳細へ移動する（Q-44） | 正常系 | `docs/screen-transitions.md` |
-| TP-7-3 | コメントを空にして更新できる | 正常系 | `docs/validation-rules.md` |
+| TP-7-3 | コメントを空にして更新すると、編集画面へ戻り、メッセージが出る（Q-21） | 異常系 | `docs/validation-rules.md` |
 | TP-7-4 | 評価は 1・5 で通り、0・6 を直接送ると弾く | 境界値 | `docs/validation-rules.md` |
 | TP-7-5 | コメントは 1000 文字で通り、1001 文字で弾き、編集画面へ戻る | 境界値 | `docs/validation-rules.md` |
 | TP-7-6 | キャンセルで書籍詳細へ戻り、何も変わらない | 正常系 | `docs/screen-transitions.md` |
@@ -197,7 +197,7 @@
 
 | ID | 何を確かめるか | 区分 | 元になった設計書 |
 | --- | --- | --- | --- |
-| TP-14-1 | ログアウトすると、書籍一覧へ移動し、セッションが無効になる（Q-07・Q-08） | 正常系 | `docs/routing.md`、`docs/screen-transitions.md` |
+| TP-14-1 | ログアウトすると、ログイン画面へ移動し、セッションが無効になる（Q-07・Q-08） | 正常系 | `docs/routing.md`、`docs/screen-transitions.md` |
 | TP-14-2 | どのテーブルも書き換えない | 正常系 | `docs/crud-matrix.md` |
 | TP-14-3 | `GET /logout` では、ログアウトされない | 異常系 | `docs/routing.md` |
 | TP-14-4 | 未ログインで `POST /logout` を送ると、ログイン画面へ移動する | 異常系 | `docs/permission-matrix.md` |
@@ -206,7 +206,7 @@
 
 | ID | 何を確かめるか | 区分 | 元になった設計書 |
 | --- | --- | --- | --- |
-| TP-15-1 | 一覧は、指定が無ければ 10 件で、`data`・`links`・`meta` の形で返る | 正常系 | `docs/api-spec.md` |
+| TP-15-1 | 一覧は、指定が無ければ 20 件で、`data`・`links`・`meta` の形で返る | 正常系 | `docs/api-spec.md` |
 | TP-15-2 | 書籍の項目（型・形式）が仕様のとおりで、`published_date` は `YYYY-MM-DD`、未入力は `null`、`isbn` は文字列（Q-58-1・Q-58-2） | 正常系 | `docs/api-spec.md` |
 | TP-15-3 | `user` にメールアドレスが入らない（Q-58-4） | 異常系 | `docs/api-spec.md` |
 | TP-15-4 | 登録日時の新しい順で、同じ日時は ID の大きい順になる（Q-50） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
@@ -214,7 +214,7 @@
 | TP-15-6 | ジャンル ID で絞れて、キーワードと一緒に指定すると両方に当てはまるものだけが返る（Q-55） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
 | TP-15-7 | キーワードの `%`・`_` が、普通の文字として検索される（Q-55） | 境界値 | `docs/questions.md` |
 | TP-15-8 | 当てはまるものが無いときは、200 で `data` が空になる | 境界値 | `docs/api-spec.md` |
-| TP-15-9 | `per_page` は 1・50 で通り、0・51 で 422 になる | 境界値 | `docs/validation-rules.md` |
+| TP-15-9 | `per_page` は 1・100 で通り、0・101 で 422 になる | 境界値 | `docs/validation-rules.md` |
 | TP-15-10 | `page` は 1 で通り、0 で 422 になる。キーワードは 255 文字で通り、256 文字で 422 になる | 境界値 | `docs/validation-rules.md` |
 | TP-15-11 | 存在しないジャンル ID は 422 になる | 異常系 | `docs/validation-rules.md` |
 | TP-15-12 | 詳細は 200 で書籍を返し、存在しない ID は 404 になる | 正常系 | `docs/api-spec.md` |
@@ -222,7 +222,7 @@
 | TP-15-14 | `user_id` が無い・存在しないときは 422 になる（Q-26） | 異常系 | `docs/validation-rules.md`、`docs/api-spec.md` |
 | TP-15-15 | 登録・更新の書籍の項目は、Web と同じ入力チェックで、エラーは日本語の `errors` で返る（Q-28） | 異常系 | `docs/validation-rules.md`、`docs/api-spec.md` |
 | TP-15-16 | 更新は 200 で更新後を返し、ジャンルが入れ替わる | 正常系 | `docs/api-spec.md` |
-| TP-15-17 | 更新で `user_id` を送っても無視され、登録者は変わらない（Q-41） | 異常系 | `docs/api-spec.md` |
+| TP-15-17 | 更新で `user_id` を送ると登録者が変わり、送らなければ変わらない。存在しない ID は 422 になる（Q-41） | 正常系 | `docs/api-spec.md` |
 | TP-15-18 | 更新で必須の項目を送らないと 422 になる。`PATCH` も同じ | 異常系 | `docs/api-spec.md`、`docs/routing.md` |
 | TP-15-19 | 更新で ISBN を変えなくても通り、ほかの書籍の ISBN は 422 になる | 異常系 | `docs/validation-rules.md` |
 | TP-15-20 | 削除は 204 で本文が無く、関連する行も一緒に消える（Q-12） | 正常系 | `docs/api-spec.md`、`docs/crud-matrix.md` |
@@ -236,8 +236,8 @@
 | TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う（Q-58-1） | 正常系 | `docs/api-spec.md` |
 | TP-15-29 | レビューが無い書籍は、一覧の `reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
 | TP-15-30 | 詳細の `reviews` に全件が新しい順で入り、`user` にメールアドレスが入らない（Q-14・Q-58-3・Q-58-4） | 正常系 | `docs/api-spec.md` |
-| TP-15-31 | レビューが無い書籍は、詳細の `reviews` が空の配列になる | 境界値 | `docs/api-spec.md` |
-| TP-15-32 | 登録・更新のレスポンスに `reviews_avg_rating`・`reviews_count`・`reviews` が入らない（Q-57） | 正常系 | `docs/api-spec.md` |
+| TP-15-31 | レビューが無い書籍は、詳細の `reviews` が空の配列、`reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
+| TP-15-32 | 登録・更新のレスポンスは書籍詳細と同じ形で、`reviews_avg_rating`・`reviews_count`・`reviews` が入る（Q-57） | 正常系 | `docs/api-spec.md` |
 
 ## 16. 画面をまたぐ観点
 

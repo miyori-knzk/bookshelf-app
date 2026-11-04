@@ -77,6 +77,7 @@ Fortify が登録するルートをそのまま使う。自分では書かない
 
 - ビューのフォームは `route('login')`・`route('register')` で URI を作り、その URI へ POST する（`auth/login`・`auth/register`）。POST のルートに名前があるかは Fortify のバージョンによるが、ビューの動きには関係しない。
 - `guest` ミドルウェアは、ログイン中なら `RouteServiceProvider::HOME` へ移動させる。Laravel の初期値は `/home` で、このルートは無いため、`/` に変える（Q-08）。ログインと会員登録の後の移動先（`config/fortify.php` の `home`）も `/` にする。
+- ログアウトの後は、ログイン画面へ移動する（Q-08）。
 - パスワードリセット・メール確認・プロフィール更新・パスワード変更・2 段階認証は `features` から外す（Q-29〜Q-31・Q-38）。これらのルートは登録されない。
 
 ## 公開API（`routes/api.php`）

@@ -64,7 +64,7 @@ erDiagram
         bigint user_id FK "投稿者"
         bigint book_id FK
         tinyint rating "1〜5"
-        text comment "任意"
+        text comment "必須"
         timestamp created_at
         timestamp updated_at
     }

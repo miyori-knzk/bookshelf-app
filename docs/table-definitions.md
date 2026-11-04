@@ -96,7 +96,7 @@
 | 2   | `user_id`    | 投稿者ID | `BIGINT UNSIGNED`（`foreignId()`）           |      | FK   | －         | `users.id` を参照。ユーザーは削除させない（Q-31）       |
 | 3   | `book_id`    | 書籍ID   | `BIGINT UNSIGNED`（`foreignId()`）           |      | FK   | －         | `books.id` を参照。書籍を削除すると一緒に削除（cascade、Q-12） |
 | 4   | `rating`     | 評価     | `TINYINT UNSIGNED`（`unsignedTinyInteger()`）|      |      | 1〜5       | 範囲は入力チェックだけで守る（CHECK 制約は付けない）    |
-| 5   | `comment`    | コメント | `TEXT`（`text()`）                           | ○    |      | 1000 文字  |                                                         |
+| 5   | `comment`    | コメント | `TEXT`（`text()`）                           |      |      | 1000 文字  |                                                         |
 | 6   | `created_at` | 投稿日時 | `TIMESTAMP`                                  | ○    |      | －         | 書籍詳細の投稿日と並び順に使う（Q-14）                  |
 | 7   | `updated_at` | 更新日時 | `TIMESTAMP`                                  | ○    |      | －         |                                                         |
 

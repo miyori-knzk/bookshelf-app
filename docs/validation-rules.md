@@ -15,8 +15,8 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 
 | 項目     | 入力名           | ルール（想定）                                       | Laravel のルール                                                   | 要件の方針                        | 確認事項 |
 | -------- | ---------------- | ---------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | -------- |
-| タイトル | `title`          | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11・Q-59 |
-| 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11・Q-59 |
+| タイトル | `title`          | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11 |
+| 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11 |
 | ISBN     | `isbn`           | 必須・ハイフン無しの数字 13 桁・ユニーク             | `required`, `digits:13`, `unique:books,isbn`                       | ISBNの桁数と一意性                | Q-11     |
 | 出版日   | `published_date` | 必須・日付（未来の日付も可）                         | `required`, `date`                                                 | 有効な日付                        | Q-11     |
 | 説明     | `description`    | 任意・2000 文字以内                                  | `nullable`, `string`, `max:2000`                                   | －                                | Q-11・Q-59 |
@@ -38,7 +38,7 @@ FormRequest：登録 `Api\V1\StoreBookRequest`、編集 `Api\V1\UpdateBookReques
 | ---------- | --------- | ------------------------------------ | ----------------------------------------- | ---------------------------- | -------- |
 | 書籍の項目 | （Web と同じ） | Web の書籍登録・書籍編集と同じ     | （Web と同じ）                            | Web 版と同等                 | Q-28     |
 | 登録者ID   | `user_id` | 登録：必須・`users` に存在する ID    | `required`, `integer`, `exists:users,id`  | 登録者IDの妥当性を検証       | Q-26     |
-|            |           | 編集：受け取らない（作成者は変えない） | －                                      | 公開API書籍登録と同等        | Q-41     |
+|            |           | 編集：任意・送られたときは `users` に存在する ID（作成者を変更する） | `sometimes`, `integer`, `exists:users,id` | 公開API書籍登録と同等        | Q-41     |
 
 - 編集のときは、Web と同じく ISBN の一意性チェックから自分自身を除く。要件「公開API 書籍編集」に記載あり。
 - エラー時は Laravel 標準の 422 JSON（`message` と `errors`）を返す（Q-28）。
@@ -52,7 +52,7 @@ FormRequest：`Api\V1\IndexBookRequest`（名前は案）
 | キーワード       | `keyword`  | 任意・255 文字以内（タイトル・著者の部分一致） | `nullable`, `string`, `max:255`         | 検索パラメータをバリデーション | Q-43     |
 | ジャンルID       | `genre_id` | 任意・存在するジャンル                   | `nullable`, `integer`, `exists:genres,id`     | 同上                         | Q-43     |
 | ページ番号       | `page`     | 任意・1 以上の整数                       | `nullable`, `integer`, `min:1`                | 同上                         | Q-43     |
-| ページあたり件数 | `per_page` | 任意・1〜50 の整数（指定が無ければ 10）  | `nullable`, `integer`, `between:1,50`         | 同上                         | Q-43・Q-27 |
+| ページあたり件数 | `per_page` | 任意・1〜100 の整数（指定が無ければ 20）  | `nullable`, `integer`, `between:1,100`         | 同上                         | Q-43・Q-27 |
 
 ## ジャンル登録・ジャンル編集
 
@@ -71,7 +71,7 @@ FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名�
 | 項目     | 入力名    | ルール（想定）         | Laravel のルール                         | 要件の方針         | 確認事項 |
 | -------- | --------- | ---------------------- | ---------------------------------------- | ------------------ | -------- |
 | 評価     | `rating`  | 必須・1〜5 の整数      | `required`, `integer`, `between:1,5`     | 評価値の範囲を検証 | Q-21     |
-| コメント | `comment` | 任意・1000 文字以内    | `nullable`, `string`, `max:1000`         | －                 | Q-21・Q-59 |
+| コメント | `comment` | 必須・1000 文字以内    | `required`, `string`, `max:1000`         | －                 | Q-21 |
 
 編集は投稿と同じ。要件「レビュー編集」に記載あり。
 
