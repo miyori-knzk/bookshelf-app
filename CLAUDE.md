@@ -65,7 +65,7 @@ Web と公開API の 2 系統を、同じモデルの上に置く。
 
 原文は `docs/requirements.md`「開発ルール」。
 
-- バリデーションは必ず FormRequest に分ける（会員登録だけは Fortify の `app/Actions/Fortify/CreateNewUser.php`、Q-09）
+- バリデーションは必ず FormRequest に分ける（会員登録だけは Fortify の `app/Actions/Fortify/CreateNewUser.php`、Q-36）
 - 認可は必ず Policy に書き、コントローラーの `$this->authorize()` で適用する（ミドルウェアでは行わない）
 - コントローラーは受付と返却に専念し、複雑な処理はモデルかサービスクラスへ
 - コントローラー・モデル・FormRequest・Policy のメソッドには、引数と戻り値の型を書く。リレーションは `HasMany` などの具体的な型にする

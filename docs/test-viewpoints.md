@@ -207,8 +207,8 @@
 | ID | 何を確かめるか | 区分 | 元になった設計書 |
 | --- | --- | --- | --- |
 | TP-15-1 | 一覧は、指定が無ければ 10 件で、`data`・`links`・`meta` の形で返る | 正常系 | `docs/api-spec.md` |
-| TP-15-2 | 書籍の項目（型・形式）が仕様のとおりで、`published_date` は `YYYY-MM-DD`、未入力は `null`、`isbn` は文字列（Q-58） | 正常系 | `docs/api-spec.md` |
-| TP-15-3 | `user` にメールアドレスが入らない（Q-58） | 異常系 | `docs/api-spec.md` |
+| TP-15-2 | 書籍の項目（型・形式）が仕様のとおりで、`published_date` は `YYYY-MM-DD`、未入力は `null`、`isbn` は文字列（Q-58-1・Q-58-2） | 正常系 | `docs/api-spec.md` |
+| TP-15-3 | `user` にメールアドレスが入らない（Q-58-4） | 異常系 | `docs/api-spec.md` |
 | TP-15-4 | 登録日時の新しい順で、同じ日時は ID の大きい順になる（Q-50） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
 | TP-15-5 | キーワードは、タイトルと著者の部分一致で絞れる | 正常系 | `docs/api-spec.md` |
 | TP-15-6 | ジャンル ID で絞れて、キーワードと一緒に指定すると両方に当てはまるものだけが返る（Q-55） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
@@ -233,9 +233,9 @@
 | TP-15-25 | 422 の `message` の残りの件数の部分が日本語になる（Q-53） | 異常系 | `docs/error-handling.md`、`docs/api-spec.md` |
 | TP-15-26 | 1 分に 60 回までは通り、61 回目で 429 になる | 境界値 | `docs/api-spec.md`、`docs/error-handling.md` |
 | TP-15-27 | 500 のとき、JSON の `message` だけを返し、エラーの詳細を返さない（本番の設定） | 異常系 | `docs/error-handling.md` |
-| TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う（Q-27・Q-58） | 正常系 | `docs/api-spec.md` |
+| TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う（Q-58-1） | 正常系 | `docs/api-spec.md` |
 | TP-15-29 | レビューが無い書籍は、一覧の `reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
-| TP-15-30 | 詳細の `reviews` に全件が新しい順で入り、`user` にメールアドレスが入らない（Q-14・Q-27・Q-58） | 正常系 | `docs/api-spec.md` |
+| TP-15-30 | 詳細の `reviews` に全件が新しい順で入り、`user` にメールアドレスが入らない（Q-14・Q-58-3・Q-58-4） | 正常系 | `docs/api-spec.md` |
 | TP-15-31 | レビューが無い書籍は、詳細の `reviews` が空の配列になる | 境界値 | `docs/api-spec.md` |
 | TP-15-32 | 登録・更新のレスポンスに `reviews_avg_rating`・`reviews_count`・`reviews` が入らない（Q-57） | 正常系 | `docs/api-spec.md` |
 

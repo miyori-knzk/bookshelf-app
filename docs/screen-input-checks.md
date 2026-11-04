@@ -78,7 +78,7 @@ FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名�
 
 ## SC-13 会員登録
 
-Fortify の `app/Actions/Fortify/CreateNewUser.php` でチェックする（Q-36）。ルールは `docs/validation-rules.md`「会員登録（Fortify）」、確認事項は Q-09。
+Fortify の `app/Actions/Fortify/CreateNewUser.php` でチェックする（Q-36）。ルールは `docs/validation-rules.md`「会員登録（Fortify）」、パスワードの条件の確認事項は Q-09。
 メッセージは `lang/ja/validation.php` に書く（Q-42）。項目名は `attributes` に「お名前」「メールアドレス」「パスワード」を登録し、`:attribute` に入れる。
 
 | 項目           | 入力名     | チェック内容                 | Laravel のルール | エラーメッセージ（案）                           | 表示場所             |

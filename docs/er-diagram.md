@@ -120,4 +120,4 @@ erDiagram
 
 - `favorites`・`review_likes` は Laravel の既定の名前ではないため、`belongsToMany` の第 2 引数にテーブル名を書く。列名（`user_id`・`book_id`・`review_id`）は既定のままで合う。
 - 中間テーブルの日時を入れるため、`BelongsToMany` のリレーションには両側とも `withTimestamps()` を付ける。
-- ビューが呼ばないリレーションのうち、`Book::user`（`BelongsTo`）は公開API のレスポンスで登録者を返すために使う（Q-27）。ほか（`User` の `books`・`reviews` など）は、実装で必要になったら足す。
+- ビューが呼ばないリレーションのうち、`Book::user`（`BelongsTo`）は公開API のレスポンスで登録者を返すために使う（Q-58-1・Q-58-2）。ほか（`User` の `books`・`reviews` など）は、実装で必要になったら足す。

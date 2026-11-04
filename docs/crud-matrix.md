@@ -44,10 +44,10 @@
 | F-18 | 会員登録               | C・R  | －     | －      | －          | －       | －         | －            | `auth/register`、`docs/validation-rules.md`（`unique:users`） |
 | F-19 | ログイン               | R     | －     | －      | －          | －       | －         | －            | `auth/login` |
 | F-20 | ログアウト             | －     | －     | －      | －          | －       | －         | －            | `layouts/navigation`（下の「埋まらない行」を参照） |
-| F-21 | API 書籍一覧取得       | R     | R     | R      | R          | R       | －         | －            | Q-27（`user`・`genres`・平均評価・レビュー件数を含める）、Q-43（キーワード・ジャンルIDでの絞り込み） |
-| F-22 | API 書籍詳細取得       | R     | R     | R      | R          | R       | －         | －            | Q-27（`user`・`genres`・`reviews` を含める） |
-| F-23 | API 書籍登録           | R     | C・R  | R      | C          | －       | －         | －            | Q-26（`exists:users,id`）、Q-28（Web と同じ入力チェック）、Q-27（レスポンス）、Q-05 |
-| F-24 | API 書籍更新           | R     | R・U  | R      | R・C・D    | －       | －         | －            | Q-28・Q-41（作成者は変えない）、Q-27（レスポンス）、Q-05 |
+| F-21 | API 書籍一覧取得       | R     | R     | R      | R          | R       | －         | －            | Q-58-1（`user`・`genres`・平均評価・レビュー件数を含める）、Q-43（キーワード・ジャンルIDでの絞り込み） |
+| F-22 | API 書籍詳細取得       | R     | R     | R      | R          | R       | －         | －            | Q-58-2（`user`・`genres`・`reviews` を含める） |
+| F-23 | API 書籍登録           | R     | C・R  | R      | C          | －       | －         | －            | Q-26（`exists:users,id`）、Q-28（Web と同じ入力チェック）、Q-57（レスポンス）、Q-05 |
+| F-24 | API 書籍更新           | R     | R・U  | R      | R・C・D    | －       | －         | －            | Q-28・Q-41（作成者は変えない）、Q-57（レスポンス）、Q-05 |
 | F-25 | API 書籍削除           | －     | R・D  | －      | D（cascade） | D（cascade） | D（cascade） | D（cascade） | Q-12（公開API も同じ）、Q-05 |
 
 ## 行ごとの補足

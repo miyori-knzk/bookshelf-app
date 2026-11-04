@@ -7,18 +7,20 @@
 - 範囲は基本機能のみ。★応用機能（`published_date` の nullable 化、Sanctum 導入後の登録者IDの見直し、読書計画）は含めない。
 - 「Laravel のルール」列は実装するときのルールの案。
 
+文字数の上限の決め方：DB の列の長さは開発側で決める（`docs/table-definitions.md`）。入力チェックの上限は、お客さんと相談して決める（Q-59）。相談の結果が列の長さを超えるときは、列も長くする。
+
 ## 書籍登録・書籍編集（Web）
 
 FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は案）
 
 | 項目     | 入力名           | ルール（想定）                                       | Laravel のルール                                                   | 要件の方針                        | 確認事項 |
 | -------- | ---------------- | ---------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | -------- |
-| タイトル | `title`          | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11     |
-| 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11     |
+| タイトル | `title`          | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11・Q-59 |
+| 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11・Q-59 |
 | ISBN     | `isbn`           | 必須・ハイフン無しの数字 13 桁・ユニーク             | `required`, `digits:13`, `unique:books,isbn`                       | ISBNの桁数と一意性                | Q-11     |
 | 出版日   | `published_date` | 必須・日付（未来の日付も可）                         | `required`, `date`                                                 | 有効な日付                        | Q-11     |
-| 説明     | `description`    | 任意・2000 文字以内                                  | `nullable`, `string`, `max:2000`                                   | －                                | Q-11     |
-| 画像URL  | `image_url`      | 任意・URL 形式・255 文字以内                         | `nullable`, `url`, `max:255`                                       | 指定された場合は URL 形式         | Q-11     |
+| 説明     | `description`    | 任意・2000 文字以内                                  | `nullable`, `string`, `max:2000`                                   | －                                | Q-11・Q-59 |
+| 画像URL  | `image_url`      | 任意・URL 形式・255 文字以内                         | `nullable`, `url`, `max:255`                                       | 指定された場合は URL 形式         | Q-11・Q-59 |
 | ジャンル | `genres`         | 必須・1 つ以上                                       | `required`, `array`, `min:1`                                       | 1つ以上選択                       | Q-11     |
 |          | `genres.*`       | 存在するジャンルのみ                                 | `integer`, `exists:genres,id`                                      | －                                | Q-11     |
 
@@ -58,7 +60,7 @@ FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`（名前�
 
 | 項目       | 入力名 | ルール（想定）                 | Laravel のルール                                    | 要件の方針               | 確認事項 |
 | ---------- | ------ | ------------------------------ | --------------------------------------------------- | ------------------------ | -------- |
-| ジャンル名 | `name` | 必須・50 文字以内・ユニーク    | `required`, `string`, `max:50`, `unique:genres,name` | 必須チェックと一意性     | Q-18     |
+| ジャンル名 | `name` | 必須・50 文字以内・ユニーク    | `required`, `string`, `max:50`, `unique:genres,name` | 必須チェックと一意性     | Q-18・Q-59 |
 
 編集のときの違い：一意性チェックから自分自身を除く（`Rule::unique('genres', 'name')->ignore($genre)`）。要件「ジャンル編集」に記載あり。
 
@@ -69,7 +71,7 @@ FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名�
 | 項目     | 入力名    | ルール（想定）         | Laravel のルール                         | 要件の方針         | 確認事項 |
 | -------- | --------- | ---------------------- | ---------------------------------------- | ------------------ | -------- |
 | 評価     | `rating`  | 必須・1〜5 の整数      | `required`, `integer`, `between:1,5`     | 評価値の範囲を検証 | Q-21     |
-| コメント | `comment` | 任意・1000 文字以内    | `nullable`, `string`, `max:1000`         | －                 | Q-21     |
+| コメント | `comment` | 任意・1000 文字以内    | `nullable`, `string`, `max:1000`         | －                 | Q-21・Q-59 |
 
 編集は投稿と同じ。要件「レビュー編集」に記載あり。
 
@@ -79,10 +81,10 @@ FormRequest ではなく、`app/Actions/Fortify/CreateNewUser.php` の `Validato
 
 | 項目               | 入力名                  | ルール（想定）                         | Laravel のルール                                                 | 要件の方針                         | 確認事項 |
 | ------------------ | ----------------------- | -------------------------------------- | ---------------------------------------------------------------- | ---------------------------------- | -------- |
-| お名前             | `name`                  | 必須・255 文字以内                     | `required`, `string`, `max:255`                                  | 名前を検証                         | Q-09     |
-| メールアドレス     | `email`                 | 必須・メール形式・255 文字以内・ユニーク | `required`, `string`, `email`, `max:255`, `unique:users`       | メールアドレスを検証               | Q-09     |
+| お名前             | `name`                  | 必須・255 文字以内                     | `required`, `string`, `max:255`                                  | 名前を検証                         | －       |
+| メールアドレス     | `email`                 | 必須・メール形式・255 文字以内・ユニーク | `required`, `string`, `email`, `max:255`, `unique:users`       | メールアドレスを検証               | －       |
 | パスワード         | `password`              | 必須・8 文字以上・確認欄と一致         | Fortify の `PasswordValidationRules`（8 文字以上）、`confirmed`  | パスワードを検証                   | Q-09     |
-| パスワード確認     | `password_confirmation` | `password` と一致（`confirmed` で確認） | －                                                              | －                                 | Q-09     |
+| パスワード確認     | `password_confirmation` | `password` と一致（`confirmed` で確認） | －                                                              | －                                 | －       |
 
 ## ログイン（Fortify）
 
