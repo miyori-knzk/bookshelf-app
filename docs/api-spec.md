@@ -394,7 +394,7 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
 
 ```json
 {
-  "message": "登録者が存在しません。 (and 2 more errors)",
+  "message": "登録者が存在しません。 （ほか2件のエラー）",
   "errors": {
     "user_id": ["登録者が存在しません。"],
     "title": ["タイトルは必須です。"],
@@ -405,7 +405,7 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
 
 - `errors` は項目ごとの配列。1 つの項目にエラーが複数あれば、すべて入る（Web の画面は最初の 1 件だけを表示するが、API は全件を返す）。
 - `message` は、最初のエラーと、残りの件数。最初のエラーは、FormRequest の `rules()` に書いた順で最初に失敗した項目のもの。
-- 残りの件数の部分（`(and 2 more errors)`）は Laravel 標準では英語。`lang/ja.json` に訳を足して日本語にする（Q-53）。上の例は、訳の文言が決まっていないため英語のまま載せている。
+- 残りの件数の部分は Laravel 標準では英語（`(and 2 more errors)`）のため、`lang/ja.json` に訳を足して日本語にしている（Q-53）。
 - `genres.*` のエラーは、`genres.0`・`genres.1` のように、何番目の要素かが付いた名前で入る。
 
 ### 404 の例

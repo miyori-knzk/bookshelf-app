@@ -70,13 +70,13 @@ Fortify が登録するルートをそのまま使う。自分では書かない
 | メソッド | URI         | ルート名   | ミドルウェア             | 機能 |
 | -------- | ----------- | ---------- | ------------------------ | ---- |
 | GET      | `/login`    | `login`    | `guest`                  | F-19 |
-| POST     | `/login`    | （下の注） | `guest`・ログイン回数の制限 | F-19 |
+| POST     | `/login`    | `login.store` | `guest`・ログイン回数の制限 | F-19 |
 | GET      | `/register` | `register` | `guest`                  | F-18 |
-| POST     | `/register` | （下の注） | `guest`                  | F-18 |
+| POST     | `/register` | `register.store` | `guest`                  | F-18 |
 | POST     | `/logout`   | `logout`   | `auth`                   | F-20 |
 
-- ビューのフォームは `route('login')`・`route('register')` で URI を作り、その URI へ POST する（`auth/login`・`auth/register`）。POST のルートに名前があるかは Fortify のバージョンによるが、ビューの動きには関係しない。
-- `guest` ミドルウェアは、ログイン中なら `RouteServiceProvider::HOME` へ移動させる。Laravel の初期値は `/home` で、このルートは無いため、`/` に変える（Q-08）。ログインと会員登録の後の移動先（`config/fortify.php` の `home`）も `/` にする。
+- ビューのフォームは `route('login')`・`route('register')` で URI を作り、その URI へ POST する（`auth/login`・`auth/register`）。
+- `guest` ミドルウェアは、ログイン中なら `RouteServiceProvider::HOME` へ移動させる。Laravel の初期値は `/home` で、このルートは無いため、`/` に変える（Q-08）。ログインと会員登録の後の移動先（`config/fortify.php` の `home`）も、`RouteServiceProvider::HOME` を参照して `/` にする。
 - ログアウトの後は、ログイン画面へ移動する（Q-08）。
 - パスワードリセット・メール確認・プロフィール更新・パスワード変更・2 段階認証は `features` から外す（Q-29〜Q-31・Q-38）。これらのルートは登録されない。
 

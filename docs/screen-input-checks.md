@@ -99,7 +99,7 @@ Fortify の `app/Actions/Fortify/CreateNewUser.php` でチェックする（Q-36
 
 - 「このメールアドレスはすでに登録されています。」は `:attribute` の形では書けないため、`lang/ja/validation.php` の `custom`（`email.unique`）に書く。
 - `confirmed` のエラーは、Laravel の仕組み上 `password` に付く。そのため、パスワード確認欄の下（`register` 30 行目の `x-input-error`）には何も表示されない。
-- 「8 文字以上」のメッセージを定義する場所は、入れる Fortify のバージョンによって変わる（Fortify 独自のルールか Laravel の `Password` ルールか）。Fortify を入れてから確かめる（Q-39）。
+- 「8 文字以上」は、Fortify の `PasswordValidationRules` が使う Laravel の `Password` ルールが判定し、メッセージは `lang/ja/validation.php` の `min.string` に書く（Fortify v1.36.2 で確認、Q-39）。
 - 会員登録の画面の入力欄は 1 項目に複数のエラーを表示できる（「共通」参照）。ただし、Laravel は `required` で失敗した項目の残りのチェックを行わないため、空欄で「必須です」とほかのメッセージが並ぶことは無い。
 
 ## SC-12 ログイン
