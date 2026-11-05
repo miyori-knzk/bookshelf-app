@@ -27,7 +27,7 @@
 | フォームを開いたまま時間がたち、セッションが切れてから送信した | `TokenMismatchException` | 419  | Laravel 標準のエラー画面（Page Expired）。入力した内容は消える | －       |
 | 書籍が紐付いているジャンルを削除しようとした | 例外ではない（削除前に確かめる） | 302      | ジャンル一覧へ戻り、エラーメッセージを表示                 | Q-17     |
 | ログインで、メールアドレスとパスワードが合わない | Fortify の `ValidationException` | 302  | ログイン画面へ戻り、メールアドレス欄にエラー（`auth.failed`） | Q-42     |
-| ログインの失敗回数が上限を超えた          | Fortify のログイン回数の制限     | 302        | ログイン画面へ戻り、メールアドレス欄にエラー（`auth.throttle`） | Q-42     |
+| ログインの回数が上限を超えた              | `ThrottleRequestsException`      | 429        | Laravel 標準のエラー画面（英語の「Too Many Requests」）。ログイン画面へは利用者が自分で戻る | Q-60     |
 | DB のエラー・そのほか予期しない例外       | `QueryException` など            | 500        | Laravel 標準のエラー画面                                   | －       |
 
 - エラー画面のビュー（`resources/views/errors/`）は無いため、403・404・405・419・500 は Laravel 標準の画面（英語）になる（Q-47）。

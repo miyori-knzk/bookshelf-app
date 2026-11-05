@@ -30,7 +30,7 @@
 | TP-2-2 | 認証が必要な画面から来たときは、ログイン後に元の画面へ戻る（Q-10） | 正常系 | `docs/sequence-diagrams.md`、`docs/screen-transitions.md` |
 | TP-2-3 | メールアドレス・パスワードが空のとき、項目ごとのメッセージで戻る | 異常系 | `docs/screen-input-checks.md` |
 | TP-2-4 | メールアドレスが未登録のときと、パスワードが違うときで、同じメッセージが出る | 異常系 | `docs/screen-input-checks.md` |
-| TP-2-5 | 失敗が上限を超えると、`auth.throttle` のメッセージが出て、残り秒数が入る | 境界値 | `docs/screen-input-checks.md`、`docs/error-handling.md` |
+| TP-2-5 | 1 分に 5 回までは通常どおり処理され、6 回目は 429 のエラー画面になる（Q-60） | 境界値 | `docs/error-handling.md` |
 | TP-2-6 | ログイン中はログイン画面を開けず、書籍一覧へ移動する（Q-08） | 異常系 | `docs/permission-matrix.md`、`docs/routing.md` |
 
 ## 3. 書籍一覧画面（トップ）
