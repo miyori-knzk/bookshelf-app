@@ -30,7 +30,7 @@ Web と公開API のルートをまとめたもの。範囲は基本機能のみ
 | PUT      | `/books/{book}`      | `books.update`  | `BookController@update`  | 要   | `BookPolicy::update`   | F-04 |
 | DELETE   | `/books/{book}`      | `books.destroy` | `BookController@destroy` | 要   | `BookPolicy::delete`   | F-05 |
 
-- 書籍一覧は `/` に置き、ルート名を `books.index` にする（Q-01）。`GET /books` は作らない（Q-01 の回答待ち）。
+- 書籍一覧は `/` に置き、ルート名を `books.index` にする（Q-01）。`GET /books` は作らない（Q-01）。
 - `/books/create` は `/books/{book}` より先に登録する。後に登録すると、`create` が書籍 ID とみなされて 404 になる。
 
 ### ジャンル
@@ -101,7 +101,7 @@ Fortify が登録するルートをそのまま使う。自分では書かない
 
 | ルート                                     | 理由                                      |
 | ------------------------------------------ | ----------------------------------------- |
-| `GET /books`                               | 書籍一覧は `/` に置く（Q-01 の回答待ち）   |
+| `GET /books`                               | 書籍一覧は `/` に置く（Q-01）   |
 | `GET /reviews`・`GET /reviews/{review}` など | レビューの一覧・詳細画面は無い。レビューは書籍詳細に表示する |
 | `GET /api/user`                            | 基本機能の API は認証しない（Q-35）        |
 | ★応用機能のルート（`/reports`・`/reading-plans`・`/notifications` など） | 今回の範囲外（`docs/features.md`） |

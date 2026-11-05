@@ -81,7 +81,7 @@
 | TP-5-5 | タイトル・著者は 255 文字で通り、256 文字で弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-6 | ISBN は 13 桁で通り、12 桁・14 桁・数字以外・ハイフン入りを弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-7 | 登録済みの ISBN を弾く | 異常系 | `docs/screen-input-checks.md` |
-| TP-5-8 | 出版日は、ありえない日付（2 月 30 日など）を弾き、未来の日付は通る | 異常系 | `docs/validation-rules.md` |
+| TP-5-8 | 出版日は、ありえない日付（2 月 30 日など）と `YYYY-MM-DD` 以外の形式（`January 2 2024` など）を弾き、未来の日付は通る | 異常系 | `docs/validation-rules.md` |
 | TP-5-9 | 説明は 2000 文字で通り、2001 文字で弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-10 | 画像URLは 255 文字で通り、256 文字と URL の形式でないものを弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-11 | 存在しないジャンル ID・配列でない値を送ると弾く | 異常系 | `docs/screen-input-checks.md` |

@@ -35,7 +35,7 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 |          |                  | ハイフン無しの数字 13 桁   | `digits:13`      | ISBNは13桁の数字で入力してください。       | 同上                |
 |          |                  | ほかの書籍と重ならない     | `unique:books,isbn`（編集は自分を除く） | このISBNはすでに登録されています。 | 同上          |
 | 出版日   | `published_date` | 入力されている             | `required`       | 出版日は必須です。                         | 出版日欄の下        |
-|          |                  | 日付として正しい           | `date`           | 出版日は正しい日付で入力してください。     | 同上                |
+|          |                  | `YYYY-MM-DD` 形式の正しい日付 | `date_format:Y-m-d` | 出版日は正しい日付で入力してください。  | 同上                |
 | 説明     | `description`    | 文字列（任意）             | `string`         | 説明は文字列で入力してください。           | 説明欄の下          |
 |          |                  | 2000 文字以内              | `max:2000`       | 説明は2000文字以内で入力してください。     | 同上                |
 | 画像URL  | `image_url`      | URL の形式（任意）         | `url`            | 画像URLはURLの形式で入力してください。     | 画像URL欄の下       |

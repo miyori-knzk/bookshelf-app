@@ -12,13 +12,13 @@
 - 機能のテストは `tests/Feature/` に置く。画面（Web）も公開API も、ルートを呼んで確かめるものはこちら
 - `tests/Unit/` は、アプリを起動しない単体のテスト用。`PHPUnit\Framework\TestCase` を継承するので、DB もルートも使えない
 - `tests/Feature/` のクラスは `Tests\TestCase` を継承する
-- メソッド名は `test_` で始めるスネークケースにし、戻り値は `: void` と書く（初期の `ExampleTest` と同じ）
+- メソッド名は `test_` で始めるスネークケースにし、戻り値は `: void` と書く
 - データベースを使うテストには `use RefreshDatabase;` を付ける
-    - 初期の `tests/Feature/ExampleTest.php` ではコメントアウトされている。DB を使うテストを書くときに外す
 
 ## 環境
 
 - テストは MySQL の `testing` データベース（`phpunit.xml`）で動く。SQLite には切り替えていない。回す前に `./vendor/bin/sail up -d` で `mysql` コンテナを起動しておく
+- 画面を返すテストのために、`tests/TestCase.php` で `withoutVite()` を呼ぶ（段階 0-2 で追加）。テストに `npm run dev` や `npm run build` は要らない
 
 ## 何を確かめるか
 

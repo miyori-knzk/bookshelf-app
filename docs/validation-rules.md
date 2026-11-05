@@ -18,7 +18,7 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 | タイトル | `title`          | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11 |
 | 著者     | `author`         | 必須・255 文字以内                                   | `required`, `string`, `max:255`                                    | 必須項目を検証                    | Q-11 |
 | ISBN     | `isbn`           | 必須・ハイフン無しの数字 13 桁・ユニーク             | `required`, `digits:13`, `unique:books,isbn`                       | ISBNの桁数と一意性                | Q-11     |
-| 出版日   | `published_date` | 必須・日付（未来の日付も可）                         | `required`, `date`                                                 | 有効な日付                        | Q-11     |
+| 出版日   | `published_date` | 必須・`YYYY-MM-DD` 形式の日付（未来の日付も可）      | `required`, `date_format:Y-m-d`                                    | 有効な日付                        | Q-11     |
 | 説明     | `description`    | 任意・2000 文字以内                                  | `nullable`, `string`, `max:2000`                                   | －                                | Q-11・Q-59 |
 | 画像URL  | `image_url`      | 任意・URL 形式・255 文字以内                         | `nullable`, `url`, `max:255`                                       | 指定された場合は URL 形式         | Q-11・Q-59 |
 | ジャンル | `genres`         | 必須・1 つ以上                                       | `required`, `array`, `min:1`                                       | 1つ以上選択                       | Q-11     |
