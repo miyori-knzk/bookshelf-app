@@ -7,7 +7,6 @@ use App\Models\Genre;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class RelationshipTest extends TestCase
@@ -69,11 +68,13 @@ class RelationshipTest extends TestCase
         $user->favoriteBooks()->attach($book);
         $user->likedReviews()->attach($review);
 
-        foreach (['book_genre', 'favorites', 'review_likes'] as $table) {
-            $row = DB::table($table)->first();
-
-            $this->assertNotNull($row->created_at, $table);
-            $this->assertNotNull($row->updated_at, $table);
-        }
+        collect([
+            $book->genres()->first()->pivot,
+            $user->favoriteBooks()->first()->pivot,
+            $user->likedReviews()->first()->pivot,
+        ])->each(function ($pivot): void {
+            $this->assertNotNull($pivot->created_at);
+            $this->assertNotNull($pivot->updated_at);
+        });
     }
 }

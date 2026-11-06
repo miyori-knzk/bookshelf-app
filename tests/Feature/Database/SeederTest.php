@@ -7,7 +7,6 @@ use App\Models\Genre;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -102,23 +101,19 @@ class SeederTest extends TestCase
             $this->assertFalse($review->likedByUsers()->whereKey($review->user_id)->exists());
         });
 
-        $this->assertSame(50, DB::table('review_likes')->count());
+        $this->assertDatabaseCount('review_likes', 50);
     }
 
     public function test_running_the_seeders_twice_does_not_duplicate_rows(): void
     {
         $this->seed();
-        $bookGenreCount = DB::table('book_genre')->count();
-        $favoriteCount = DB::table('favorites')->count();
-        $likeCount = DB::table('review_likes')->count();
-
         $this->seed();
 
         $this->assertSame(5, User::count());
         $this->assertSame(10, Genre::count());
         $this->assertSame(11, Book::count());
-        $this->assertSame($bookGenreCount, DB::table('book_genre')->count());
-        $this->assertSame($favoriteCount, DB::table('favorites')->count());
-        $this->assertSame($likeCount, DB::table('review_likes')->count());
+        $this->assertDatabaseCount('book_genre', 16);
+        $this->assertDatabaseCount('favorites', 19);
+        $this->assertDatabaseCount('review_likes', 50);
     }
 }

@@ -8,7 +8,6 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ForeignKeyTest extends TestCase
@@ -26,10 +25,10 @@ class ForeignKeyTest extends TestCase
 
         $book->delete();
 
-        $this->assertSame(0, DB::table('book_genre')->count());
-        $this->assertSame(0, DB::table('favorites')->count());
+        $this->assertDatabaseCount('book_genre', 0);
+        $this->assertDatabaseCount('favorites', 0);
         $this->assertSame(0, Review::count());
-        $this->assertSame(0, DB::table('review_likes')->count());
+        $this->assertDatabaseCount('review_likes', 0);
     }
 
     public function test_deleting_a_review_deletes_its_likes(): void
@@ -39,7 +38,7 @@ class ForeignKeyTest extends TestCase
 
         $review->delete();
 
-        $this->assertSame(0, DB::table('review_likes')->count());
+        $this->assertDatabaseCount('review_likes', 0);
     }
 
     public function test_a_genre_with_books_cannot_be_deleted(): void
