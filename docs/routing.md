@@ -32,6 +32,8 @@ Web と公開API のルートをまとめたもの。範囲は基本機能のみ
 
 - 書籍一覧は `/` に置き、ルート名を `books.index` にする（Q-01）。`GET /books` は作らない（Q-01）。
 - `/books/create` は `/books/{book}` より先に登録する。後に登録すると、`create` が書籍 ID とみなされて 404 になる。
+- `Route::resource()` は、`PUT` のほかに `PATCH` も `update` につなげる（書籍・ジャンル）。ビューのフォームは `PUT` を送る。
+- `GET /books` は無いが、`POST /books` があるため、`GET /books` を開くと 404 ではなく 405 になる。
 
 ### ジャンル
 
