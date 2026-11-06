@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Actions\Fortify\CreateNewUser;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -45,35 +44,36 @@ class FortifySetupTest extends TestCase
 
     public function test_register_required_messages_are_japanese(): void
     {
-        $errors = $this->registrationErrors([]);
-
-        $this->assertSame(['お名前は必須です。'], $errors['name']);
-        $this->assertSame(['メールアドレスは必須です。'], $errors['email']);
-        $this->assertSame(['パスワードは必須です。'], $errors['password']);
+        $this->post('/register', [])
+            ->assertSessionHasErrors([
+                'name' => 'お名前は必須です。',
+                'email' => 'メールアドレスは必須です。',
+                'password' => 'パスワードは必須です。',
+            ]);
     }
 
     public function test_register_format_messages_are_japanese(): void
     {
-        $errors = $this->registrationErrors([
+        $this->post('/register', [
             'name' => str_repeat('あ', 256),
             'email' => 'not-email',
             'password' => 'short',
             'password_confirmation' => 'different',
-        ]);
-
-        $this->assertContains('お名前は255文字以内で入力してください。', $errors['name']);
-        $this->assertContains('メールアドレスは正しい形式で入力してください。', $errors['email']);
-        $this->assertContains('パスワードは8文字以上で入力してください。', $errors['password']);
-        $this->assertContains('パスワードとパスワード確認が一致しません。', $errors['password']);
+        ])
+            ->assertSessionHasErrors([
+                'name' => 'お名前は255文字以内で入力してください。',
+                'email' => 'メールアドレスは正しい形式で入力してください。',
+                'password' => 'パスワードは8文字以上で入力してください。',
+            ])
+            ->assertSessionHasErrors(['password' => 'パスワードとパスワード確認が一致しません。']);
     }
 
     public function test_register_duplicate_email_message_is_japanese(): void
     {
         User::factory()->create(['email' => 'taken@example.com']);
 
-        $errors = $this->registrationErrors(['email' => 'taken@example.com']);
-
-        $this->assertSame(['このメールアドレスはすでに登録されています。'], $errors['email']);
+        $this->post('/register', ['email' => 'taken@example.com'])
+            ->assertSessionHasErrors(['email' => 'このメールアドレスはすでに登録されています。']);
     }
 
     public function test_login_failure_messages_are_japanese(): void
@@ -87,22 +87,5 @@ class FortifySetupTest extends TestCase
         $validator = Validator::make([], ['a' => 'required', 'b' => 'required', 'c' => 'required'], ['required' => '必須です。']);
 
         $this->assertSame('必須です。 （ほか2件のエラー）', (new ValidationException($validator))->getMessage());
-    }
-
-    /**
-     * 会員登録の入力チェックを通し、項目ごとのエラーを返す。
-     *
-     * @param  array<string, string>  $input
-     * @return array<string, array<int, string>>
-     */
-    private function registrationErrors(array $input): array
-    {
-        try {
-            (new CreateNewUser)->create($input);
-        } catch (ValidationException $e) {
-            return $e->errors();
-        }
-
-        $this->fail('ValidationException が発生しませんでした。');
     }
 }
