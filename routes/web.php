@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 | ルートの一覧は docs/routing.md を参照。
 | 認可（Policy）はミドルウェアではなく、コントローラーの authorize() で行う。
 |
+| ルートを足す・変えるときは、tests/Feature/RouteDefinitionTest.php も直す。
+| - routeProvider() に、メソッド・URI・ルート名を足す
+| - ログインが要らないルートを足すときは、authRouteProvider() の
+|   最初の reject の一覧（ログイン不要のルート名）にも足す。足し忘れると、
+|   「ゲストはログイン画面へ移動する」のテストが失敗する
+|
 */
 
 // 書籍。一覧は `/` に置く（GET /books は作らない）
