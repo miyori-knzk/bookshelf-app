@@ -121,6 +121,12 @@ class RouteDefinitionTest extends TestCase
     }
 
     /**
+     * 仮実装（abort(501)）のルートを確かめる。
+     *
+     * ルートの本体を作った段階で、そのルートを対象から外し、本来のテストをその段階の
+     * *ControllerTest に書く（docs/features.md「段階 0-2 の仮実装のテスト」）。
+     * 外し忘れると、このテストが失敗する。
+     *
      * @dataProvider authRouteProvider
      */
     public function test_authenticated_user_gets_not_implemented_for_stub_routes(string $method, string $uri): void
@@ -130,6 +136,13 @@ class RouteDefinitionTest extends TestCase
             ->assertStatus(501);
     }
 
+    /**
+     * ログインが要らないルートが、ログイン画面へ移動させずに開けることを確かめる（今は仮実装の 501）。
+     *
+     * ルートの本体を作った段階で、そのルートを下の一覧から外し、本来のテストをその段階の
+     * *ControllerTest に書く（docs/features.md「段階 0-2 の仮実装のテスト」）。
+     * 外し忘れると、このテストが失敗する。
+     */
     public function test_public_routes_do_not_require_login(): void
     {
         collect(['/books/1', '/ranking', '/api/v1/books'])
