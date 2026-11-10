@@ -83,7 +83,7 @@ FormRequest ではなく、`app/Actions/Fortify/CreateNewUser.php` の `Validato
 | ------------------ | ----------------------- | -------------------------------------- | ---------------------------------------------------------------- | ---------------------------------- | -------- |
 | お名前             | `name`                  | 必須・255 文字以内                     | `required`, `string`, `max:255`                                  | 名前を検証                         | －       |
 | メールアドレス     | `email`                 | 必須・メール形式・255 文字以内・ユニーク | `required`, `string`, `email`, `max:255`, `unique:users`       | メールアドレスを検証               | －       |
-| パスワード         | `password`              | 必須・8 文字以上・確認欄と一致         | Fortify の `PasswordValidationRules`（8 文字以上）、`confirmed`  | パスワードを検証                   | Q-09     |
+| パスワード         | `password`              | 必須・8 文字以上・確認欄と一致         | Fortify の `PasswordValidationRules`（8 文字以上）、`confirmed`  | パスワードを検証                   | Q-09・Q-63 |
 | パスワード確認     | `password_confirmation` | `password` と一致（`confirmed` で確認） | －                                                              | －                                 | －       |
 
 ## ログイン（Fortify）

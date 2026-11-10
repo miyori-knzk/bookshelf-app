@@ -34,6 +34,7 @@
 | TP-2-4 | メールアドレスが未登録のときと、パスワードが違うときで、同じメッセージが出る | 異常系 | `docs/screen-input-checks.md` |
 | TP-2-5 | 1 分に 5 回までは通常どおり処理され、6 回目は 429 のエラー画面になる。ログインに成功した回も、回数に数える（Q-60） | 境界値 | `docs/error-handling.md`、`docs/screen-input-checks.md` |
 | TP-2-6 | ログイン中はログイン画面を開けず、書籍一覧へ移動する（Q-08） | 異常系 | `docs/permission-matrix.md`、`docs/routing.md` |
+| TP-2-7 | 登録したメールアドレスと大文字小文字だけが違う入力でも、ログインできる（Q-62） | 正常系 | `docs/questions.md` |
 
 ## 3. 書籍一覧画面（トップ）
 

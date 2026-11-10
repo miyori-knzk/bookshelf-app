@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * 段階 1：ログイン（F-19）。docs/test-viewpoints.md の TP-2-1〜TP-2-6。
+ * 段階 1：ログイン（F-19）。docs/test-viewpoints.md の TP-2-1〜TP-2-7。
  *
  * エラーメッセージの文言は FortifySetupTest が確かめているため、ここでは文言を直接書かない。
  */
@@ -112,6 +112,9 @@ class LoginTest extends TestCase
             ->assertRedirect('/');
     }
 
+    /**
+     * ログインでも、メールアドレスの大文字小文字を区別しない（TP-2-7、Q-62）。
+     */
     public function test_login_ignores_letter_case_of_email(): void
     {
         $user = User::factory()->create(['email' => 'yamada@example.com']);
