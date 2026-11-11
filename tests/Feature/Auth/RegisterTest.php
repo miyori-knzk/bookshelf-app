@@ -9,7 +9,7 @@ use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /**
- * 段階 1：会員登録（F-18）。docs/test-viewpoints.md の TP-1-1〜TP-1-11。
+ * 段階 1：会員登録（F-18）。docs/test-viewpoints.md の TP-1-1〜TP-1-12。
  *
  * エラーメッセージの文言は FortifySetupTest が確かめているため、ここでは文言を直接書かず、
  * エラーが付く項目と、users の行の増減で確かめる。
@@ -111,7 +111,7 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * 大文字を含むメールアドレスも登録でき、小文字にそろえて保存される（Q-62）。
+     * 大文字を含むメールアドレスも登録でき、小文字にそろえて保存される（TP-1-12、Q-62）。
      */
     public function test_email_with_uppercase_letters_can_be_registered_and_is_saved_in_lowercase(): void
     {
@@ -186,6 +186,9 @@ class RegisterTest extends TestCase
             ->assertRedirect('/');
     }
 
+    /**
+     * 開こうとした画面が保存されていても、会員登録の後は書籍一覧へ移動する（TP-1-11、Q-61）。
+     */
     public function test_after_register_goes_to_book_list_even_if_a_page_was_saved_for_return(): void
     {
         $this->withSession(['url.intended' => url('/books/create')])
