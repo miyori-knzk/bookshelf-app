@@ -21,7 +21,7 @@
 | TP-1-8 | パスワードは 8 文字で通り、7 文字で弾く | 境界値 | `docs/validation-rules.md` |
 | TP-1-9 | エラーで戻ったとき、お名前・メールアドレスは残り、パスワードは残らない | 異常系 | `docs/screen-input-checks.md`、`docs/screen-transitions.md` |
 | TP-1-10 | ログイン中は会員登録画面を開けず、書籍一覧へ移動する（Q-08） | 異常系 | `docs/permission-matrix.md` |
-| TP-1-11 | 開こうとした画面が保存されていても、会員登録の後は書籍一覧へ移動する（Q-61） | 正常系 | `docs/screen-transitions.md`、`docs/questions.md` |
+| TP-1-11 | 開こうとした画面が保存されているときは、会員登録の後もその画面へ移動する。保存されていないときは書籍一覧へ移動する（Q-61） | 正常系 | `docs/screen-transitions.md`、`docs/questions.md` |
 | TP-1-12 | 大文字を含むメールアドレスで登録でき、小文字にそろえて保存される（Q-62） | 正常系 | `docs/questions.md`、`docs/table-definitions.md` |
 
 ## 2. ログイン画面
@@ -85,7 +85,7 @@
 | TP-5-6 | ISBN は 13 桁で通り、12 桁・14 桁・数字以外・ハイフン入りを弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-7 | 登録済みの ISBN を弾く | 異常系 | `docs/screen-input-checks.md` |
 | TP-5-8 | 出版日は、ありえない日付（2 月 30 日など）と `YYYY-MM-DD` 以外の形式（`January 2 2024` など）を弾き、未来の日付は通る | 異常系 | `docs/validation-rules.md` |
-| TP-5-9 | 説明は 2000 文字で通り、2001 文字で弾く | 境界値 | `docs/validation-rules.md` |
+| TP-5-9 | 説明は 16000 文字で通り、16001 文字で弾く（Q-59・Q-64） | 境界値 | `docs/validation-rules.md` |
 | TP-5-10 | 画像URLは 255 文字で通り、256 文字と URL の形式でないものを弾く | 境界値 | `docs/validation-rules.md` |
 | TP-5-11 | 存在しないジャンル ID・配列でない値を送ると弾く | 異常系 | `docs/screen-input-checks.md` |
 | TP-5-12 | エラーで戻ったとき、入力値とジャンルの選択が残る | 異常系 | `docs/screen-items.md` |
@@ -168,7 +168,7 @@
 | --- | --- | --- | --- |
 | TP-11-1 | 登録すると `genres` に行が増え、ジャンル一覧へ移動する（Q-46） | 正常系 | `docs/screen-transitions.md` |
 | TP-11-2 | 空のときに弾く | 異常系 | `docs/screen-input-checks.md` |
-| TP-11-3 | 50 文字で通り、51 文字で弾く | 境界値 | `docs/validation-rules.md` |
+| TP-11-3 | 255 文字で通り、256 文字で弾く（Q-59） | 境界値 | `docs/validation-rules.md` |
 | TP-11-4 | 同じ名前を弾く | 異常系 | `docs/screen-input-checks.md` |
 | TP-11-5 | 大文字と小文字・全角と半角・ひらがなとカタカナ・濁点と半濁点だけが違う名前も、同じ名前として弾く（Q-48） | 境界値 | `docs/table-definitions.md`、`docs/questions.md` |
 | TP-11-6 | キャンセルでジャンル一覧へ戻り、何も増えない | 正常系 | `docs/screen-transitions.md` |
@@ -182,7 +182,7 @@
 | TP-12-2 | 更新すると、ジャンル一覧へ移動し、そのジャンルの書籍の表示も新しい名前になる（Q-46） | 正常系 | `docs/screen-transitions.md`、`docs/crud-matrix.md` |
 | TP-12-3 | 名前を変えずに更新できる（自分は重複に数えない） | 正常系 | `docs/validation-rules.md` |
 | TP-12-4 | ほかのジャンルと同じ名前に変えると弾く | 異常系 | `docs/validation-rules.md` |
-| TP-12-5 | 50 文字で通り、51 文字で弾き、編集画面へ戻る | 境界値 | `docs/validation-rules.md` |
+| TP-12-5 | 255 文字で通り、256 文字で弾き、編集画面へ戻る（Q-59） | 境界値 | `docs/validation-rules.md` |
 | TP-12-6 | 未ログインでは開けず、存在しない ID は 404 になる | 異常系 | `docs/permission-matrix.md`、`docs/error-handling.md` |
 
 ## 13. ランキング画面

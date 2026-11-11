@@ -232,7 +232,7 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
 | `author`         | 文字列        | ○    | 255 文字以内                                   |
 | `isbn`           | 文字列        | ○    | ハイフン無しの数字 13 桁。ほかの書籍と重ならない |
 | `published_date` | 文字列        | ○    | 日付（`YYYY-MM-DD`）                           |
-| `description`    | 文字列 / null |      | 2000 文字以内                                  |
+| `description`    | 文字列 / null |      | 16000 文字以内                                 |
 | `image_url`      | 文字列 / null |      | URL の形式・255 文字以内                       |
 | `genres`         | 整数の配列    | ○    | 1 つ以上。どれも存在するジャンルの ID          |
 
