@@ -187,13 +187,24 @@ class RegisterTest extends TestCase
     }
 
     /**
-     * 開こうとした画面が保存されていても、会員登録の後は書籍一覧へ移動する（TP-1-11、Q-61）。
+     * 開こうとした画面が保存されているときは、会員登録の後もその画面へ移動する（TP-1-11、Q-61）。
      */
-    public function test_after_register_goes_to_book_list_even_if_a_page_was_saved_for_return(): void
+    public function test_after_register_goes_to_the_page_saved_for_return(): void
     {
         $this->withSession(['url.intended' => url('/books/create')])
             ->submit($this->validInput())
-            ->assertRedirect('/');
+            ->assertRedirect(url('/books/create'));
+    }
+
+    /**
+     * 未ログインで「書籍登録」を開き、ログイン画面から会員登録の画面へ移っても、開こうとした画面は残っている（AC-1-6、Q-61）。
+     */
+    public function test_saved_page_survives_moving_from_login_to_register(): void
+    {
+        $this->get('/books/create')->assertRedirect(route('login'));
+        $this->get('/register')->assertOk();
+
+        $this->submit($this->validInput())->assertRedirect(url('/books/create'));
     }
 
     /**
