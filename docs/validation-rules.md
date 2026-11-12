@@ -56,7 +56,7 @@ FormRequest：`Api\V1\IndexBookRequest`（名前は案）
 
 ## ジャンル登録・ジャンル編集
 
-FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`（名前は案）
+FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`
 
 | 項目       | 入力名 | ルール（想定）                 | Laravel のルール                                    | 要件の方針               | 確認事項 |
 | ---------- | ------ | ------------------------------ | --------------------------------------------------- | ------------------------ | -------- |

@@ -2,75 +2,96 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGenreRequest;
+use App\Http\Requests\UpdateGenreRequest;
+use App\Models\Genre;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+
+/**
+ * ジャンルの一覧・詳細・登録・編集・削除（F-06〜F-10）。
+ *
+ * ログインの確認はルートの `auth` ミドルウェアで行う。ジャンルに Policy は付けない（Q-16）。
+ */
 class GenreController extends Controller
 {
     /**
      * ジャンル一覧を表示する（F-06）。
      *
-     * 仮実装。段階 2 で実装する。
+     * ページ分けせず、全件を名前順に出す（Q-19）。
      */
-    public function index(): never
+    public function index(): View
     {
-        abort(501);
+        $genres = Genre::withCount('books')->orderBy('name')->get();
+
+        return view('genres.index', ['genres' => $genres]);
     }
 
     /**
      * ジャンル詳細を表示する（F-07）。
      *
-     * 仮実装。段階 2 で実装する。
+     * そのジャンルの書籍を、新しい順に 10 件ずつ出す（Q-19・Q-50）。
      */
-    public function show(): never
+    public function show(Genre $genre): View
     {
-        abort(501);
+        $books = $genre->books()
+            ->with('genres')
+            ->orderByDesc('books.created_at')
+            ->orderByDesc('books.id')
+            ->paginate(10);
+
+        return view('genres.show', ['genre' => $genre, 'books' => $books]);
     }
 
     /**
      * ジャンル登録画面を表示する（F-08）。
-     *
-     * 仮実装。段階 2 で実装する。
      */
-    public function create(): never
+    public function create(): View
     {
-        abort(501);
+        return view('genres.create');
     }
 
     /**
      * ジャンルを登録する（F-08）。
-     *
-     * 仮実装。段階 2 で実装する。
      */
-    public function store(): never
+    public function store(StoreGenreRequest $request): RedirectResponse
     {
-        abort(501);
+        Genre::create($request->validated());
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを登録しました。');
     }
 
     /**
      * ジャンル編集画面を表示する（F-09）。
-     *
-     * 仮実装。段階 2 で実装する。
      */
-    public function edit(): never
+    public function edit(Genre $genre): View
     {
-        abort(501);
+        return view('genres.edit', ['genre' => $genre]);
     }
 
     /**
      * ジャンルを更新する（F-09）。
-     *
-     * 仮実装。段階 2 で実装する。
      */
-    public function update(): never
+    public function update(UpdateGenreRequest $request, Genre $genre): RedirectResponse
     {
-        abort(501);
+        $genre->update($request->validated());
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを更新しました。');
     }
 
     /**
      * ジャンルを削除する（F-10）。
      *
-     * 仮実装。段階 2 で実装する。
+     * 書籍が紐付いているジャンルは削除せず、エラーメッセージを付けて一覧へ戻す（Q-17）。
      */
-    public function destroy(): never
+    public function destroy(Genre $genre): RedirectResponse
     {
-        abort(501);
+        if ($genre->books()->exists()) {
+            return redirect()->route('genres.index')->with('error', '書籍が登録されているジャンルは削除できません。');
+        }
+
+        $genre->delete();
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを削除しました。');
     }
 }
