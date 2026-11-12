@@ -180,7 +180,7 @@
 | --- | --- | --- | --- |
 | TP-12-1 | 今の名前が初期値に入っている | 正常系 | `docs/screen-list.md` |
 | TP-12-2 | 更新すると、ジャンル一覧へ移動し、そのジャンルの書籍の表示も新しい名前になる（Q-46） | 正常系 | `docs/screen-transitions.md`、`docs/crud-matrix.md` |
-| TP-12-3 | 名前を変えずに更新できる（自分は重複に数えない） | 正常系 | `docs/validation-rules.md` |
+| TP-12-3 | 名前を変えずに更新できる（自分は重複に数えない）。このときも「ジャンルを更新しました。」が出る（Q-65） | 正常系 | `docs/validation-rules.md` |
 | TP-12-4 | ほかのジャンルと同じ名前に変えると弾く | 異常系 | `docs/validation-rules.md` |
 | TP-12-5 | 255 文字で通り、256 文字で弾き、編集画面へ戻る（Q-59） | 境界値 | `docs/validation-rules.md` |
 | TP-12-6 | 未ログインでは開けず、存在しない ID は 404 になる | 異常系 | `docs/permission-matrix.md`、`docs/error-handling.md` |

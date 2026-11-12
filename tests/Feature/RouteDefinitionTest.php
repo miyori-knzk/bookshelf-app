@@ -71,6 +71,22 @@ class RouteDefinitionTest extends TestCase
     }
 
     /**
+     * ログインが必要な Web ルートのうち、まだ仮実装（abort(501)）のもの。
+     *
+     * ルートの本体を作った段階で、そのルートをここから外す（`reject` の一覧に足す）。
+     *
+     * @return array<string, array{string, string}>
+     */
+    public static function stubRouteProvider(): array
+    {
+        return collect(static::routeProvider())
+            ->only(array_keys(static::authRouteProvider()))
+            ->reject(fn (array $route): bool => str_starts_with($route[2], 'genres.'))
+            ->map(fn (array $route): array => [$route[0], $route[1]])
+            ->all();
+    }
+
+    /**
      * URI の `{book}` などを ID（1）に置き換えて、リクエストに使える URI にする。
      */
     private function concreteUri(string $uri): string
@@ -127,7 +143,7 @@ class RouteDefinitionTest extends TestCase
      * *ControllerTest に書く（docs/features.md「段階 0-2 の仮実装のテスト」）。
      * 外し忘れると、このテストが失敗する。
      *
-     * @dataProvider authRouteProvider
+     * @dataProvider stubRouteProvider
      */
     public function test_authenticated_user_gets_not_implemented_for_stub_routes(string $method, string $uri): void
     {

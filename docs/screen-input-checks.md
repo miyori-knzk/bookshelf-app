@@ -51,7 +51,7 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 
 ## SC-07 ジャンル登録・SC-08 ジャンル編集
 
-FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`（名前は案）。ルールは `docs/validation-rules.md`「ジャンル登録・ジャンル編集」、確認事項は Q-18。
+FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`。ルールは `docs/validation-rules.md`「ジャンル登録・ジャンル編集」、確認事項は Q-18。
 
 | 項目       | 入力名 | チェック内容             | Laravel のルール                         | エラーメッセージ（案）                          | 表示場所         |
 | ---------- | ------ | ------------------------ | ---------------------------------------- | ----------------------------------------------- | ---------------- |
