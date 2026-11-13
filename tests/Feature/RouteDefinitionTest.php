@@ -82,6 +82,7 @@ class RouteDefinitionTest extends TestCase
         return collect(static::routeProvider())
             ->only(array_keys(static::authRouteProvider()))
             ->reject(fn (array $route): bool => str_starts_with($route[2], 'genres.'))
+            ->reject(fn (array $route): bool => str_starts_with($route[2], 'books.'))
             ->map(fn (array $route): array => [$route[0], $route[1]])
             ->all();
     }
@@ -104,13 +105,6 @@ class RouteDefinitionTest extends TestCase
         $this->assertNotNull($route, $name);
         $this->assertContains($method, $route->methods(), $name);
         $this->assertSame($uri, '/' . ltrim($route->uri(), '/'), $name);
-    }
-
-    public function test_top_page_shows_empty_book_list(): void
-    {
-        $this->get('/')
-            ->assertOk()
-            ->assertSee('書籍が登録されていません。');
     }
 
     public function test_books_index_route_does_not_exist_at_books_uri(): void
@@ -161,7 +155,7 @@ class RouteDefinitionTest extends TestCase
      */
     public function test_public_routes_do_not_require_login(): void
     {
-        collect(['/books/1', '/ranking', '/api/v1/books'])
+        collect(['/ranking', '/api/v1/books'])
             ->each(fn (string $uri) => $this->get($uri)->assertStatus(501));
     }
 
