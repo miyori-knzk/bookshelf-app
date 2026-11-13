@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * 書籍。
@@ -52,5 +53,39 @@ class Book extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * 書籍とジャンルの紐付けを、まとめて登録する（F-03）。
+     *
+     * 途中で失敗したときに書籍だけが残らないよう、transaction でまとめる（Q-05）。
+     *
+     * @param  array<string, mixed>  $attributes  書籍の項目（`user_id` を含む）
+     * @param  array<int, int|string>  $genreIds  紐付けるジャンルの ID
+     */
+    public static function createWithGenres(array $attributes, array $genreIds): self
+    {
+        return DB::transaction(function () use ($attributes, $genreIds): self {
+            $book = self::create($attributes);
+            $book->genres()->attach($genreIds);
+
+            return $book;
+        });
+    }
+
+    /**
+     * 書籍と、ジャンルの紐付けを、まとめて更新する（F-04）。
+     *
+     * ジャンルは `sync` で入れ替える。途中で失敗したときに書籍だけ更新されないよう、transaction でまとめる（Q-05）。
+     *
+     * @param  array<string, mixed>  $attributes  書籍の項目
+     * @param  array<int, int|string>  $genreIds  紐付けるジャンルの ID
+     */
+    public function updateWithGenres(array $attributes, array $genreIds): void
+    {
+        DB::transaction(function () use ($attributes, $genreIds): void {
+            $this->update($attributes);
+            $this->genres()->sync($genreIds);
+        });
     }
 }

@@ -92,6 +92,7 @@
 | TP-5-13 | ジャンルが 0 件のとき、「ジャンルが登録されていません。先にジャンルを登録してください。」が出る | 境界値 | `docs/screen-items.md` |
 | TP-5-14 | `book_genre` の書き込みで失敗すると、`books` の行も残らない（Q-05） | 異常系 | `docs/error-handling.md` |
 | TP-5-15 | 未ログインでは開けず、送信しても保存されない | 異常系 | `docs/permission-matrix.md` |
+| TP-5-16 | ジャンルのチェックボックスが、名前順に並ぶ（Q-68） | 正常系 | `docs/screen-items.md`、`docs/questions.md` |
 
 ## 6. 書籍編集画面
 
@@ -109,6 +110,7 @@
 | TP-6-10 | 未ログインで開くと、403 ではなくログイン画面へ移動する | 異常系 | `docs/error-handling.md` |
 | TP-6-11 | 存在しない ID は 404 になる | 異常系 | `docs/error-handling.md` |
 | TP-6-12 | 途中で失敗すると、`books` の更新も残らない（Q-05） | 異常系 | `docs/error-handling.md` |
+| TP-6-13 | ジャンルのチェックボックスが、名前順に並ぶ（Q-68） | 正常系 | `docs/screen-items.md`、`docs/questions.md` |
 
 ## 7. レビュー編集画面
 
