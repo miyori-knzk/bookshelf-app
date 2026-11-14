@@ -62,7 +62,7 @@ FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`。ルー�
 
 ## SC-02 書籍詳細（レビュー投稿）・SC-09 レビュー編集
 
-FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名前は案）。ルールは `docs/validation-rules.md`「レビュー投稿・レビュー編集」、確認事項は Q-21。
+FormRequest：`ReviewRequest`（投稿と編集で共通）。ルールは `docs/validation-rules.md`「レビュー投稿・レビュー編集」、確認事項は Q-21。
 
 | 項目     | 入力名    | チェック内容         | Laravel のルール | エラーメッセージ（案）                       | 表示場所                         |
 | -------- | --------- | -------------------- | ---------------- | -------------------------------------------- | -------------------------------- |
@@ -76,6 +76,7 @@ FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名�
 - 評価は選択式のため、`integer` と `between` は同じメッセージにする（どちらも「選択肢に無い値が送られた」とき）。
 - コメントは必須（Q-21）。提供ビューのコメント欄に必須マークは無い。
 - 「選択してください」の動詞は、SC-02 がプルダウン、SC-09 がラジオボタンで、どちらにも合う。
+- SC-09 の評価の ★ は、選んだ評価の 1 つだけが黄色になる（ビューの作り。評価 3 なら 3 番目だけ）。エラーで戻ったときも同じ（Q-69）。
 
 ## SC-13 会員登録
 
