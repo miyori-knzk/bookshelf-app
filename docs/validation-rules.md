@@ -66,7 +66,7 @@ FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`
 
 ## レビュー投稿・レビュー編集
 
-FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名前は案）
+FormRequest：`ReviewRequest`（投稿と編集で同じルール・同じメッセージのため、1 つを使い回す）
 
 | 項目     | 入力名    | ルール（想定）         | Laravel のルール                         | 要件の方針         | 確認事項 |
 | -------- | --------- | ---------------------- | ---------------------------------------- | ------------------ | -------- |

@@ -62,7 +62,7 @@ FormRequest：登録 `StoreGenreRequest`、編集 `UpdateGenreRequest`。ルー�
 
 ## SC-02 書籍詳細（レビュー投稿）・SC-09 レビュー編集
 
-FormRequest：投稿 `StoreReviewRequest`、編集 `UpdateReviewRequest`（名前は案）。ルールは `docs/validation-rules.md`「レビュー投稿・レビュー編集」、確認事項は Q-21。
+FormRequest：`ReviewRequest`（投稿と編集で共通）。ルールは `docs/validation-rules.md`「レビュー投稿・レビュー編集」、確認事項は Q-21。
 
 | 項目     | 入力名    | チェック内容         | Laravel のルール | エラーメッセージ（案）                       | 表示場所                         |
 | -------- | --------- | -------------------- | ---------------- | -------------------------------------------- | -------------------------------- |

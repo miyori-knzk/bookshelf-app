@@ -83,6 +83,7 @@ class RouteDefinitionTest extends TestCase
             ->only(array_keys(static::authRouteProvider()))
             ->reject(fn (array $route): bool => str_starts_with($route[2], 'genres.'))
             ->reject(fn (array $route): bool => str_starts_with($route[2], 'books.'))
+            ->reject(fn (array $route): bool => in_array($route[2], ['reviews.store', 'reviews.edit', 'reviews.update', 'reviews.destroy'], true))
             ->map(fn (array $route): array => [$route[0], $route[1]])
             ->all();
     }
