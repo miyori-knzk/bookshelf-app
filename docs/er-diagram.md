@@ -70,8 +70,9 @@ erDiagram
     }
 
     favorites {
-        bigint user_id PK,FK
-        bigint book_id PK,FK
+        bigint id PK
+        bigint user_id FK,UK
+        bigint book_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
