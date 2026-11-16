@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+**チャットでの返答も、作成する資料（設計書・PR 本文・イシューなど）も、日本語で書くこと。**
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## このリポジトリは何か
