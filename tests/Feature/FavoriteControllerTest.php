@@ -173,7 +173,7 @@ class FavoriteControllerTest extends TestCase
     public function test_index_orders_by_added_time_newest_first_not_by_book_registration(): void
     {
         $books = $this->createBooks(3);
-        // 書籍の登録順とは逆の順に、お気に入りへ追加する
+        // 書籍の登録順（昇順・降順）のどちらとも違う順に、お気に入りへ追加する
         $this->addFavoritesOneMinuteApart($this->user, [$books[2], $books[0], $books[1]]);
 
         $this->actingAs($this->user)->get(route('favorites.index'))
