@@ -108,12 +108,14 @@
 
 | No. | 列名         | 論理名       | 型                                   | NULL | キー   | 備考                                                    |
 | --- | ------------ | ------------ | ------------------------------------ | ---- | ------ | ------------------------------------------------------- |
-| 1   | `user_id`    | ユーザーID   | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `users.id` を参照。ユーザーは削除させない（Q-31）       |
-| 2   | `book_id`    | 書籍ID       | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `books.id` を参照。書籍を削除すると一緒に削除（cascade、Q-12） |
-| 3   | `created_at` | 追加日時     | `TIMESTAMP`                          | ○    |        | お気に入り一覧の並び順に使う（Q-23）。`withTimestamps()` で入れる |
-| 4   | `updated_at` | 更新日時     | `TIMESTAMP`                          | ○    |        | 同上                                                    |
+| 1   | `id`         | ID           | `BIGINT UNSIGNED`（`id()`）          |      | PK     | 追加日時が同じときの並び順に使う（下の注）              |
+| 2   | `user_id`    | ユーザーID   | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `users.id` を参照。ユーザーは削除させない（Q-31）。`book_id` との組でユニーク |
+| 3   | `book_id`    | 書籍ID       | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `books.id` を参照。書籍を削除すると一緒に削除（cascade、Q-12）。`user_id` との組でユニーク |
+| 4   | `created_at` | 追加日時     | `TIMESTAMP`                          | ○    |        | お気に入り一覧の並び順に使う（Q-23）。`withTimestamps()` で入れる |
+| 5   | `updated_at` | 更新日時     | `TIMESTAMP`                          | ○    |        | 同上                                                    |
 
-- 主キーは `user_id`, `book_id` の順。同じ書籍を 2 回お気に入りにはできない。
+- 主キーは `id`。`(user_id, book_id)` にユニーク制約を付けて、同じ書籍を 2 回お気に入りにはできない。
+- `id` を足す理由：お気に入り一覧は、追加日時（`created_at`）の新しい順に並べ、同じ日時のものは `id` の大きい順にする（Q-23・Q-50）。シーダーは複数のお気に入りを同じ秒に入れるため、これが無いと、ページ送りで書籍が重複したり抜けたりする。要件 DR05 は「ユーザーIDと書籍IDの組み合わせ」とだけ書いていて、列を限っていない。`review_likes` は並び順に使わないため、複合主キーのままにする。
 
 ### review_likes（いいね）
 

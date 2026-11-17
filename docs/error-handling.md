@@ -71,5 +71,5 @@ Laravel は、リクエストに `Accept: application/json` が無いと、エ�
 | 同じ ISBN の書籍を、2 人がほぼ同時に登録した                     | `books.isbn` のユニーク制約   | F-03・F-04・F-23・F-24 |
 | 同じジャンル名を、2 人がほぼ同時に登録した                       | `genres.name` のユニーク制約  | F-08・F-09       |
 | 削除前の確認の後、削除までの間に、そのジャンルが書籍に紐付けられた | `book_genre.genre_id` の外部キー | F-10          |
-| ハート・いいねのボタンを、すばやく 2 回押した                    | `favorites`・`review_likes` の主キー | F-14・F-15 |
+| ハート・いいねのボタンを、すばやく 2 回押した                    | `favorites` の `(user_id, book_id)` のユニーク制約・`review_likes` の主キー | F-14・F-15 |
 

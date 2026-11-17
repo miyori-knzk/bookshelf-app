@@ -138,6 +138,9 @@
 | TP-8-6 | 最後のページの最後の 1 冊を解除すると、書籍がある最後のページへ移動する（Q-56） | 境界値 | `docs/questions.md` |
 | TP-8-7 | `?page=99` を開くと、書籍がある最後のページへ移動する（Q-56） | 異常系 | `docs/questions.md` |
 | TP-8-8 | 未ログインでは開けない | 異常系 | `docs/permission-matrix.md` |
+| TP-8-9 | 追加日時が同じお気に入りは、`favorites.id` の大きい順に並ぶ（Q-50） | 境界値 | `docs/table-definitions.md` |
+| TP-8-10 | お気に入りが 0 件のとき `?page=2` を開くと、`?page=1` へ移動し、0 件の表示になる（Q-56） | 境界値 | `docs/questions.md` |
+| TP-8-11 | お気に入り・いいねの切り替えで Referer が無いときは、セッションに直前の画面があればそこへ、無ければ `/` へ移動する（Q-70） | 異常系 | `docs/sequence-diagrams.md` |
 
 ## 9. ジャンル一覧画面
 
