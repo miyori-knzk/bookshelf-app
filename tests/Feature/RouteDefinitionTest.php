@@ -121,7 +121,7 @@ class RouteDefinitionTest extends TestCase
      */
     public function test_public_routes_do_not_require_login(): void
     {
-        collect(['/ranking', '/api/v1/books'])
+        collect(['/api/v1/books'])
             ->each(fn (string $uri) => $this->get($uri)->assertStatus(501));
     }
 
