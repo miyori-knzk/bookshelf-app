@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,6 +55,48 @@ class Book extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * キーワードとジャンルで絞り込む（公開API の書籍一覧。F-21）。
+     *
+     * キーワードは、タイトルか著者に含まれる書籍に絞る（部分一致）。`%`・`_`・`\` は、ワイルドカードや
+     * エスケープではなく普通の文字として検索する（Q-55）。ジャンルと両方指定したときは、両方に当てはまる書籍に絞る。
+     * どちらも `null` なら、絞り込まない。
+     *
+     * @param  Builder<Book>  $query
+     * @return Builder<Book>
+     */
+    public function scopeFilter(Builder $query, ?string $keyword, ?int $genreId): Builder
+    {
+        $like = '%' . addcslashes((string) $keyword, '\\%_') . '%';
+
+        return $query
+            ->when($keyword !== null, fn (Builder $q): Builder => $q->where(
+                fn (Builder $q): Builder => $q->where('title', 'like', $like)->orWhere('author', 'like', $like)
+            ))
+            ->when($genreId !== null, fn (Builder $q): Builder => $q->whereHas(
+                'genres',
+                fn (Builder $q): Builder => $q->where('genres.id', $genreId)
+            ));
+    }
+
+    /**
+     * 公開API の書籍詳細の形に必要なものを、まとめて読み込む（F-22〜F-24）。
+     *
+     * 登録者・ジャンル・レビュー（投稿者つき、新しい順。同じ日時は ID の大きい順。Q-14・Q-50）と、
+     * 平均評価（`reviews_avg_rating`）・レビュー件数（`reviews_count`）。
+     */
+    public function loadDetail(): self
+    {
+        $this->load([
+            'user',
+            'genres',
+            'reviews' => fn ($query) => $query->with('user')->orderByDesc('created_at')->orderByDesc('id'),
+        ]);
+        $this->loadAvg('reviews', 'rating')->loadCount('reviews');
+
+        return $this;
     }
 
     /**

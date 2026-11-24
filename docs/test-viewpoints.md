@@ -237,15 +237,17 @@
 | TP-15-21 | 更新・削除で存在しない ID は 404 になる | 異常系 | `docs/api-spec.md` |
 | TP-15-22 | ログインせず、CSRF トークンも無しで、登録・更新・削除ができる | 正常系 | `docs/permission-matrix.md`、`docs/sequence-diagrams.md` |
 | TP-15-23 | `Accept: application/json` を付けなくても、エラーが JSON で返る | 異常系 | `docs/error-handling.md` |
-| TP-15-24 | 404（書籍・無いパス）・405 の `message` が日本語で、クラス名が入らない（Q-53） | 異常系 | `docs/error-handling.md` |
+| TP-15-24 | 404（書籍・無いパス）・405 の `message` が日本語で、クラス名が入らない（Q-53・Q-76） | 異常系 | `docs/error-handling.md` |
 | TP-15-25 | 422 の `message` の残りの件数の部分が日本語になる（Q-53） | 異常系 | `docs/error-handling.md`、`docs/api-spec.md` |
-| TP-15-26 | 1 分に 60 回までは通り、61 回目で 429 になる | 境界値 | `docs/api-spec.md`、`docs/error-handling.md` |
-| TP-15-27 | 500 のとき、JSON の `message` だけを返し、エラーの詳細を返さない（本番の設定） | 異常系 | `docs/error-handling.md` |
-| TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う（Q-58-1） | 正常系 | `docs/api-spec.md` |
+| TP-15-26 | 1 分に 60 回までは通り、61 回目で 429 になる（Q-78） | 境界値 | `docs/api-spec.md`、`docs/error-handling.md` |
+| TP-15-27 | 500 のとき、JSON の `message` だけを返し、エラーの詳細を返さない（本番の設定。Q-75） | 異常系 | `docs/error-handling.md` |
+| TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う。平均が整数のときは `5` と、小数点なしで返る（Q-58-1・Q-77） | 正常系 | `docs/api-spec.md` |
 | TP-15-29 | レビューが無い書籍は、一覧の `reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
 | TP-15-30 | 詳細の `reviews` に全件が新しい順で入り、`user` にメールアドレスが入らない（Q-14・Q-58-3・Q-58-4） | 正常系 | `docs/api-spec.md` |
 | TP-15-31 | レビューが無い書籍は、詳細の `reviews` が空の配列、`reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
 | TP-15-32 | 登録・更新のレスポンスは書籍詳細と同じ形で、`reviews_avg_rating`・`reviews_count`・`reviews` が入る（Q-57） | 正常系 | `docs/api-spec.md` |
+| TP-15-33 | 一覧の `links` の URL に、`keyword`・`genre_id`・`per_page` が引き継がれ、`next` をたどると同じ条件の続きが返る。空の値は付かない（Q-73） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
+| TP-15-34 | 公開API の応答（一覧・詳細・登録・エラー）の日本語が、`\u5c71`（「山」の文字コード）のようにエスケープされず、そのまま出る。`/api/` 以外の JSON は変わらない（Q-74） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
 
 ## 16. 画面をまたぐ観点
 

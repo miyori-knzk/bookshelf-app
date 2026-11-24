@@ -112,19 +112,6 @@ class RouteDefinitionTest extends TestCase
         $this->call($method, $this->concreteUri($uri))->assertRedirect(route('login'));
     }
 
-    /**
-     * ログインが要らないルートが、ログイン画面へ移動させずに開けることを確かめる（今は仮実装の 501）。
-     *
-     * ルートの本体を作った段階で、そのルートを下の一覧から外し、本来のテストをその段階の
-     * *ControllerTest に書く（docs/features.md「段階 0-2 の仮実装のテスト」）。
-     * 外し忘れると、このテストが失敗する。
-     */
-    public function test_public_routes_do_not_require_login(): void
-    {
-        collect(['/api/v1/books'])
-            ->each(fn (string $uri) => $this->get($uri)->assertStatus(501));
-    }
-
     public function test_default_api_user_route_is_removed(): void
     {
         $this->getJson('/api/user')->assertNotFound();
