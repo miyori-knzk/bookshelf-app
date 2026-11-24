@@ -127,9 +127,26 @@ Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `
     }
   ],
   "links": { "first": "…?page=1", "last": "…?page=2", "prev": null, "next": "…?page=2" },
-  "meta": { "current_page": 1, "from": 1, "last_page": 2, "path": "…/books", "per_page": 20, "to": 1, "total": 2 }
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 2,
+    "links": [
+      { "url": null, "label": "&laquo; Previous", "active": false },
+      { "url": "…?page=1", "label": "1", "active": true },
+      { "url": "…?page=2", "label": "2", "active": false },
+      { "url": "…?page=2", "label": "Next &raquo;", "active": false }
+    ],
+    "path": "…/books",
+    "per_page": 20,
+    "to": 1,
+    "total": 2
+  }
 }
 ```
+
+- `links`：最初・最後・前・次のページの URL（前や次が無いときは `null`）。`next` をたどれば、続きが読める。`keyword`・`genre_id`・`per_page` を指定したときは、その条件が、どの URL にも引き継がれる。
+- `meta.links`：ページ番号のボタンの一覧（`url`・`label`・`active`）。先頭が「前へ」、末尾が「次へ」で、`active` が `true` のものが、今のページ。`label` は Laravel 標準のままで、英語（`Previous`・`Next`）に、HTML の記号（`&laquo;`・`&raquo;`）がつく。
 
 ### 書籍詳細・登録・更新（`GET`・`POST`・`PUT`）
 
