@@ -1,26 +1,28 @@
 # BookShelf
 
-書籍レビューアプリ（Laravel 10・PHP 8.5・MySQL 8.4）。Blade の Web 画面と、外部向けの公開API（JSON）を持つ。
-設計書は [`docs/`](docs/) にある。実装と設計書が食い違ったときは、設計書を正とする。
+書籍レビューアプリ（Laravel 10・PHP 8.5・MySQL 8.4）。Blade の Web 画面と外部向けの公開API（JSON）を持つ。
+設計書は [`docs/`](docs/) にある。実装と設計書が食い違ったら設計書を正とする。
 
 - [ER図](#er図)
 - [公開API のレスポンス構造](#公開api-のレスポンス構造)
 
 ## ER図
 
-アプリのテーブルと、そのつながり（基本機能の範囲）。列の型・制約は [`docs/table-definitions.md`](docs/table-definitions.md)、つながりの詳細は [`docs/er-diagram.md`](docs/er-diagram.md) を参照。
+アプリのテーブルとそのつながり（基本機能の範囲）。
+列の型・制約は [`docs/table-definitions.md`](docs/table-definitions.md) を参照。
+つながりの詳細は [`docs/er-diagram.md`](docs/er-diagram.md) を参照。
 
 ```mermaid
 erDiagram
     users ||--o{ books : "登録する"
     users ||--o{ reviews : "投稿する"
     books ||--o{ reviews : "レビューされる"
-    books ||--o{ book_genre : ""
-    genres ||--o{ book_genre : ""
-    users ||--o{ favorites : ""
-    books ||--o{ favorites : ""
-    users ||--o{ review_likes : ""
-    reviews ||--o{ review_likes : ""
+    books ||--|{ book_genre : "ジャンルが付く（1つ以上）"
+    genres ||--o{ book_genre : "書籍に付けられる"
+    users ||--o{ favorites : "お気に入りにする"
+    books ||--o{ favorites : "お気に入りにされる"
+    users ||--o{ review_likes : "いいねする"
+    reviews ||--o{ review_likes : "いいねされる"
 
     users {
         bigint id PK
@@ -54,8 +56,9 @@ erDiagram
     }
 
     book_genre {
-        bigint book_id PK,FK
-        bigint genre_id PK,FK
+        bigint id PK
+        bigint book_id FK,UK "genre_idと複合ユニーク"
+        bigint genre_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
@@ -72,27 +75,28 @@ erDiagram
 
     favorites {
         bigint id PK
-        bigint user_id FK,UK
+        bigint user_id FK,UK "book_idと複合ユニーク"
         bigint book_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
 
     review_likes {
-        bigint user_id PK,FK
-        bigint review_id PK,FK
+        bigint id PK
+        bigint user_id FK,UK "review_idと複合ユニーク"
+        bigint review_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
 ```
 
-- 書籍を削除すると、そのレビュー・お気に入り・ジャンルの紐付け、レビューへのいいねも一緒に消える（cascade）。
-- ユーザーは削除しない。ジャンルは、書籍が紐付いていると削除できない。
-- 同じユーザーが同じ書籍に、何件でもレビューを書ける。
+- 書籍を削除すると、そのレビュー・お気に入り・ジャンルの紐付け・レビューへのいいねも一緒に消える（cascade）。
+- ユーザーは削除しない。ジャンルは書籍が紐付いていると削除できない。
+- 同じユーザーが同じ書籍に何件でもレビューを書ける。
 
 ## 公開API のレスポンス構造
 
-ベース URL は `http://localhost/api/v1`。認証なし。レスポンスは、エラーも含めて JSON（日本語はエスケープしない）。
+ベース URL は `http://localhost/api/v1`。認証なし。エラーも含めて JSON で返す（日本語はエスケープしない）。
 入力・エラーの詳細は [`docs/api-spec.md`](docs/api-spec.md) を参照。
 
 | メソッド | パス            | 説明               | 成功時 |
@@ -105,7 +109,7 @@ erDiagram
 
 ### 書籍一覧（`GET /books`）
 
-Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `keyword`・`genre_id`・`page`・`per_page`（既定 20、最大 100）。新しい順。
+Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `keyword`・`genre_id`・`page`・`per_page`（既定 20・最大 100）。新しい順。
 
 ```json
 {
@@ -145,12 +149,14 @@ Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `
 }
 ```
 
-- `links`：最初・最後・前・次のページの URL（前や次が無いときは `null`）。`next` をたどれば、続きが読める。`keyword`・`genre_id`・`per_page` を指定したときは、その条件が、どの URL にも引き継がれる。
-- `meta.links`：ページ番号のボタンの一覧（`url`・`label`・`active`）。先頭が「前へ」、末尾が「次へ」で、`active` が `true` のものが、今のページ。`label` は Laravel 標準のままで、英語（`Previous`・`Next`）に、HTML の記号（`&laquo;`・`&raquo;`）がつく。
+- `links`：最初・最後・前・次のページの URL（前や次が無いときは `null`）。`next` をたどれば続きが読める。`keyword`・`genre_id`・`per_page` の条件は、どの URL にも引き継がれる。
+- `meta.links`：ページ番号のボタンの一覧（`url`・`label`・`active`）。先頭が「前へ」で末尾が「次へ」。`active` が `true` のものが今のページ。
+- `label` は Laravel 標準のまま。英語（`Previous`・`Next`）と HTML の記号（`&laquo;`・`&raquo;`）がつく。
 
 ### 書籍詳細・登録・更新（`GET`・`POST`・`PUT`）
 
-`data` の中に 1 冊分。一覧の項目に、`reviews`（新しい順。無ければ `[]`）が加わる。登録は 201、更新は 200 で、どちらも詳細と同じ形。
+`data` の中に 1 冊分が入る。項目は書籍一覧と同じで、これに `reviews`（新しい順。無ければ `[]`）が加わる。一覧には `reviews` は入らない。
+登録は 201、更新は 200。どちらも詳細と同じ形。
 
 ```json
 {
@@ -200,19 +206,19 @@ Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `
 
 ### エラー
 
-どのエラーも `message` を返す。入力エラー（422）だけ、項目ごとのメッセージを `errors` に入れる。
+どのエラーも `error` を返す。入力エラー（422）だけ項目ごとのメッセージを `errors` に入れる。
 
 | ステータス | 場合                                     | 本文                |
 | ---------- | ---------------------------------------- | ------------------- |
-| 404        | その ID の書籍が無い、または無いパス     | `message`           |
-| 405        | パスはあるが、メソッドが違う             | `message`           |
-| 422        | 入力がルールに合わない                   | `message`・`errors` |
-| 429        | 回数の制限（1 分に 60 回）を超えた       | `message`           |
-| 500        | サーバーの中で予期しないエラーが起きた   | `message`           |
+| 404        | その ID の書籍が無い、または無いパス     | `error`           |
+| 405        | パスはあるがメソッドが違う               | `error`           |
+| 422        | 入力がルールに合わない                   | `error`・`errors` |
+| 429        | 回数の制限（1 分に 60 回）を超えた       | `error`           |
+| 500        | サーバーの中で予期しないエラーが起きた   | `error`           |
 
 ```json
 {
-  "message": "登録者が存在しません。 （ほか2件のエラー）",
+  "error": "登録者が存在しません。 （ほか2件のエラー）",
   "errors": {
     "user_id": ["登録者が存在しません。"],
     "title": ["タイトルは必須です。"],
@@ -220,72 +226,3 @@ Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `
   }
 }
 ```
-
----
-
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

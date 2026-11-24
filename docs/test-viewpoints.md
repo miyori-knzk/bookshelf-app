@@ -237,10 +237,10 @@
 | TP-15-21 | 更新・削除で存在しない ID は 404 になる | 異常系 | `docs/api-spec.md` |
 | TP-15-22 | ログインせず、CSRF トークンも無しで、登録・更新・削除ができる | 正常系 | `docs/permission-matrix.md`、`docs/sequence-diagrams.md` |
 | TP-15-23 | `Accept: application/json` を付けなくても、エラーが JSON で返る | 異常系 | `docs/error-handling.md` |
-| TP-15-24 | 404（書籍・無いパス）・405 の `message` が日本語で、クラス名が入らない（Q-53・Q-76） | 異常系 | `docs/error-handling.md` |
-| TP-15-25 | 422 の `message` の残りの件数の部分が日本語になる（Q-53） | 異常系 | `docs/error-handling.md`、`docs/api-spec.md` |
+| TP-15-24 | 404（書籍・無いパス）・405 の `error` が日本語で、クラス名が入らない（Q-53・Q-76） | 異常系 | `docs/error-handling.md` |
+| TP-15-25 | 422 の `error` の残りの件数の部分が日本語になる（Q-53） | 異常系 | `docs/error-handling.md`、`docs/api-spec.md` |
 | TP-15-26 | 1 分に 60 回までは通り、61 回目で 429 になる（Q-78） | 境界値 | `docs/api-spec.md`、`docs/error-handling.md` |
-| TP-15-27 | 500 のとき、JSON の `message` だけを返し、エラーの詳細を返さない（本番の設定。Q-75） | 異常系 | `docs/error-handling.md` |
+| TP-15-27 | 500 のとき、JSON の `error` だけを返し、エラーの詳細を返さない（本番の設定。Q-75） | 異常系 | `docs/error-handling.md` |
 | TP-15-28 | 一覧の各書籍に `reviews_avg_rating`・`reviews_count` が入り、値がその書籍のレビューの平均・件数と合う。平均が整数のときは `5` と、小数点なしで返る（Q-58-1・Q-77） | 正常系 | `docs/api-spec.md` |
 | TP-15-29 | レビューが無い書籍は、一覧の `reviews_avg_rating` が `null`、`reviews_count` が 0 になる | 境界値 | `docs/api-spec.md` |
 | TP-15-30 | 詳細の `reviews` に全件が新しい順で入り、`user` にメールアドレスが入らない（Q-14・Q-58-3・Q-58-4） | 正常系 | `docs/api-spec.md` |

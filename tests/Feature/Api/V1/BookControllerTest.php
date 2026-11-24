@@ -13,7 +13,7 @@ use Tests\TestCase;
 /**
  * 段階 7：公開API の書籍の一覧・詳細・登録・更新・削除（F-21〜F-25）。
  *
- * エラーの形（`Accept` が無いとき、404・405・429・500 の `message`）は ErrorResponseTest で確かめる。
+ * エラーの形（`Accept` が無いとき、404・405・429・500 の `error`）は ErrorResponseTest で確かめる。
  */
 class BookControllerTest extends TestCase
 {
@@ -360,7 +360,7 @@ class BookControllerTest extends TestCase
     {
         $this->getJson('/api/v1/books/9999')
             ->assertNotFound()
-            ->assertExactJson(['message' => '書籍が見つかりません。']);
+            ->assertExactJson(['error' => '書籍が見つかりません。']);
     }
 
     public function test_japanese_is_not_unicode_escaped_in_responses(): void
@@ -558,7 +558,7 @@ class BookControllerTest extends TestCase
     {
         $this->putJson('/api/v1/books/9999', $this->validInput())
             ->assertNotFound()
-            ->assertExactJson(['message' => '書籍が見つかりません。']);
+            ->assertExactJson(['error' => '書籍が見つかりません。']);
         $this->putJson('/api/v1/books/9999', [])->assertNotFound();
     }
 
@@ -595,6 +595,6 @@ class BookControllerTest extends TestCase
     {
         $this->deleteJson('/api/v1/books/9999')
             ->assertNotFound()
-            ->assertExactJson(['message' => '書籍が見つかりません。']);
+            ->assertExactJson(['error' => '書籍が見つかりません。']);
     }
 }

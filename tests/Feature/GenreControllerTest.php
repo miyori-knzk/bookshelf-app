@@ -356,7 +356,7 @@ class GenreControllerTest extends TestCase
     {
         $genre = Genre::create(['name' => '紀行']);
 
-        // 名前が同じでも、変えたときと同じ成功メッセージを出す（Q-65 は回答待ちの想定）
+        // 名前が同じでも、変えたときと同じ成功メッセージを出す（Q-65）
         $this->actingAs($this->user)->put(route('genres.update', $genre), ['name' => '紀行'])
             ->assertRedirect(route('genres.index'))
             ->assertSessionHasNoErrors()

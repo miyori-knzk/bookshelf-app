@@ -3,7 +3,7 @@
 アプリのテーブルと、そのつながりを図にしたもの。範囲は基本機能のみ（`docs/features.md` 参照）。
 列の型・制約の詳細は `docs/table-definitions.md`、機能ごとのテーブル操作は `docs/crud-matrix.md` を参照。
 
-- 中間テーブルの名前（`book_genre`・`favorites`・`review_likes`）は Q-49 の想定。
+- 中間テーブルの名前（`book_genre`・`favorites`・`review_likes`）は Q-49 の想定。中間テーブルはすべて `id`（主キー）と `created_at`・`updated_at` を持ち、2 つの外部キーの組に複合ユニーク制約を付ける。
 - Laravel 標準のテーブル（`password_reset_tokens`・`failed_jobs`・`personal_access_tokens`）は、アプリのテーブルとつながらないため図に入れない。`docs/table-definitions.md` の「Laravel 標準のテーブル」を参照。
 - ★応用機能のテーブル（読書計画・通知）は入れない。
 
@@ -14,12 +14,12 @@ erDiagram
     users ||--o{ books : "登録する"
     users ||--o{ reviews : "投稿する"
     books ||--o{ reviews : "レビューされる"
-    books ||--o{ book_genre : ""
-    genres ||--o{ book_genre : ""
-    users ||--o{ favorites : ""
-    books ||--o{ favorites : ""
-    users ||--o{ review_likes : ""
-    reviews ||--o{ review_likes : ""
+    books ||--|{ book_genre : "ジャンルが付く（1つ以上）"
+    genres ||--o{ book_genre : "書籍に付けられる"
+    users ||--o{ favorites : "お気に入りにする"
+    books ||--o{ favorites : "お気に入りにされる"
+    users ||--o{ review_likes : "いいねする"
+    reviews ||--o{ review_likes : "いいねされる"
 
     users {
         bigint id PK
@@ -53,8 +53,9 @@ erDiagram
     }
 
     book_genre {
-        bigint book_id PK,FK
-        bigint genre_id PK,FK
+        bigint id PK
+        bigint book_id FK,UK "genre_idと複合ユニーク"
+        bigint genre_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
@@ -71,15 +72,16 @@ erDiagram
 
     favorites {
         bigint id PK
-        bigint user_id FK,UK
+        bigint user_id FK,UK "book_idと複合ユニーク"
         bigint book_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
 
     review_likes {
-        bigint user_id PK,FK
-        bigint review_id PK,FK
+        bigint id PK
+        bigint user_id FK,UK "review_idと複合ユニーク"
+        bigint review_id FK,UK
         timestamp created_at
         timestamp updated_at
     }
@@ -101,7 +103,7 @@ erDiagram
 
 - 「削除させない」は、子の行が残っていると親の行を削除できない（外部キーの既定の動き）。`users` は退会を作らないため削除されない（Q-31）。`genres` は書籍が紐付いていると削除できない（Q-17）。
 - 書籍を削除すると、`reviews` が cascade で消え、そのレビューの `review_likes` も続けて cascade で消える（Q-12）。削除のしかたは Q-05。
-- 書籍には必ず 1 つ以上のジャンルを付ける（入力チェック、`docs/validation-rules.md`）。DB では 0 件も入れられるため、図では「0 以上」（`o{`）にしている。
+- 書籍には必ず 1 つ以上のジャンルを付ける（入力チェック、`docs/validation-rules.md`）。そのため図では、書籍側を「1 以上」（`|{`）にしている。DB の制約ではなく、アプリの入力チェックで守る。
 - 同じユーザーが同じ書籍に何件でもレビューを書ける（Q-20）ため、`reviews` には `user_id` と `book_id` の組み合わせのユニーク制約を付けない。
 
 ## モデルのリレーション
