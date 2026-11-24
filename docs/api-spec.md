@@ -15,8 +15,9 @@
 | リクエストの形式   | POST・PUT の本文は JSON（`Content-Type: application/json`）                                |
 | レスポンスの形式   | JSON（`Content-Type: application/json`）。エラーも JSON で返す（`docs/error-handling.md`） |
 | 文字コード         | UTF-8                                                                                      |
-| 回数の制限         | 1 分に 60 回まで（IP ごと。Laravel の初期値）。超えると 429                               |
-| レスポンスの作り方 | API Resource（`BookResource`、名前は案）                                                    |
+| 日本語の出力       | `\u5c71` のようにエスケープせず、そのまま出す（Q-74。エラーも同じ）                       |
+| 回数の制限         | 1 分に 60 回まで（IP ごと。Laravel の初期値。Q-78）。超えると 429                         |
+| レスポンスの作り方 | API Resource（`BookResource`。`ReviewResource`・`UserResource`・`GenreResource` を使う）    |
 
 リクエストには `Accept: application/json` を付けることを勧める。付けなくても JSON で返す（`docs/error-handling.md`「公開API は必ず JSON で返す」）。
 
@@ -42,7 +43,7 @@
 
 | 項目                 | 型            | 内容                                                                       |
 | -------------------- | ------------- | -------------------------------------------------------------------------- |
-| `reviews_avg_rating` | 数値 / null   | 平均評価。小数第 1 位に丸める（`books/index` の表示と同じ。Q-58-1）。レビューが無ければ `null` |
+| `reviews_avg_rating` | 数値 / null   | 平均評価。小数第 1 位に丸める（`books/index` の表示と同じ。Q-58-1）。整数になるときは `5` のように、小数点なしで返す（Q-77）。レビューが無ければ `null` |
 | `reviews_count`      | 整数          | レビュー件数。レビューが無ければ 0                                         |
 
 書籍詳細（F-22）には、さらに次の項目を足す。
@@ -140,10 +141,10 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
     }
   ],
   "links": {
-    "first": "http://localhost/api/v1/books?page=1",
-    "last": "http://localhost/api/v1/books?page=2",
+    "first": "http://localhost/api/v1/books?genre_id=1&per_page=2&page=1",
+    "last": "http://localhost/api/v1/books?genre_id=1&per_page=2&page=2",
     "prev": null,
-    "next": "http://localhost/api/v1/books?page=2"
+    "next": "http://localhost/api/v1/books?genre_id=1&per_page=2&page=2"
   },
   "meta": {
     "current_page": 1,
@@ -159,6 +160,7 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
 ```
 
 - `meta.links` には、ページ番号のリンクの一覧が入る（Laravel 標準。ここでは省略）。
+- `links` と `meta.links` の URL には、指定した `keyword`・`genre_id`・`per_page` を引き継ぐ（Q-73）。`next` をたどれば、同じ条件の続きが返る。空の値（`?keyword=`）は付けない。
 - 当てはまる書籍が無いときも 200 で、`data` は空の配列（`[]`）、`meta.total` は 0。
 
 ### エラー
@@ -196,7 +198,7 @@ Laravel 標準のページ分けの形（`data`・`links`・`meta`）。
       { "id": 2, "name": "ビジネス" },
       { "id": 4, "name": "自己啓発" }
     ],
-    "reviews_avg_rating": 5.0,
+    "reviews_avg_rating": 5,
     "reviews_count": 1,
     "reviews": [
       {

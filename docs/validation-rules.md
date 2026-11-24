@@ -32,7 +32,7 @@ FormRequest：登録 `StoreBookRequest`、編集 `UpdateBookRequest`（名前は
 
 ## 公開API 書籍登録・書籍編集
 
-FormRequest：登録 `Api\V1\StoreBookRequest`、編集 `Api\V1\UpdateBookRequest`（名前は案）
+FormRequest：登録 `Api\V1\StoreBookRequest`、編集 `Api\V1\UpdateBookRequest`（どちらも、Web の `BookRequest` を継承して、書籍の項目のルールとメッセージを使い回す）
 
 | 項目       | 入力名    | ルール（想定）                       | Laravel のルール                          | 要件の方針                   | 確認事項 |
 | ---------- | --------- | ------------------------------------ | ----------------------------------------- | ---------------------------- | -------- |
@@ -45,7 +45,7 @@ FormRequest：登録 `Api\V1\StoreBookRequest`、編集 `Api\V1\UpdateBookReques
 
 ## 公開API 書籍一覧
 
-FormRequest：`Api\V1\IndexBookRequest`（名前は案）
+FormRequest：`Api\V1\IndexBookRequest`
 
 | 項目             | 入力名     | ルール（想定）                           | Laravel のルール                              | 要件の方針                   | 確認事項 |
 | ---------------- | ---------- | ---------------------------------------- | --------------------------------------------- | ---------------------------- | -------- |

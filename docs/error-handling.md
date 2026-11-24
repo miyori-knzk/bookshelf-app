@@ -37,7 +37,7 @@
 
 ### 公開API は必ず JSON で返す
 
-Laravel は、リクエストに `Accept: application/json` が無いと、エラーを HTML の画面やリダイレクトで返す。外部アプリが `Accept` を付け忘れても JSON で返すよう、例外ハンドラーで `/api/` から始まる URL は必ず JSON にする（`shouldRenderJsonWhen()`）。
+Laravel は、リクエストに `Accept: application/json` が無いと、エラーを HTML の画面やリダイレクトで返す。外部アプリが `Accept` を付け忘れても JSON で返すよう、例外ハンドラーで `/api/` から始まる URL は必ず JSON にする。Laravel 10 の `Handler` には `shouldRenderJsonWhen()` が無い（Laravel 11 の仕組み）ため、`shouldReturnJson()` を上書きする。
 
 ### ステータスごとの返し方
 
@@ -50,7 +50,11 @@ Laravel は、リクエストに `Accept: application/json` が無いと、エ�
 | 回数の制限を超えた                     | `ThrottleRequestsException`         | 429        | リクエストが多すぎます。しばらくしてからもう一度お試しください。 |
 | DB のエラー・そのほか予期しない例外    | `QueryException` など               | 500        | サーバーでエラーが発生しました。                      |
 
+- エラーの JSON も、日本語を `\u5c71` のようにエスケープせず、そのまま出す（Q-74。`app/Http/Middleware/UnescapedUnicodeJson.php`。ルートが無い 404 なども対象にするため、全体のミドルウェアにしている）。
 - 422 以外の文言は、Laravel 標準のままだと英語になる。また 404 は、標準のままだとモデルのクラス名（`App\Models\Book`）が `message` に入る。そのため、例外ハンドラーで、`/api/` の URL のときだけ上の文言に置き換える（Q-53）。
+- 500 は、`APP_DEBUG=false`（本番）のときだけ、上の `message` だけを返す（Q-75）。開発中（`APP_DEBUG=true`）は、原因をたどれるよう、Laravel 標準の詳細つきの JSON のまま。
+- 書籍が無いときの 404 は（Q-76）、Laravel の中で `ModelNotFoundException` が `NotFoundHttpException`（元の例外は `getPrevious()`）に置き換わってからハンドラーに届く。元の例外が `ModelNotFoundException` かどうかで、「書籍が見つかりません。」と「指定されたURLは存在しません。」を分ける。
+- 上の表に無いステータス（413（本文が大きすぎる）・503（メンテナンス中）など）は、Laravel 標準のままにする。JSON では返る（`/api/` は必ず JSON）が、`message` は日本語にしない。起きる場面が基本機能ではほぼ無いため、必要になってから足す。
 - 公開API には認証が無いため、401・403 は基本機能では返さない。★応用機能で Sanctum を入れると、401（トークンが無い・正しくない）と 403（作成者ではない）が増える。
 
 ## トランザクションと例外
