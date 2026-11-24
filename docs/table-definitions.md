@@ -13,7 +13,7 @@
 | strict モード  | 有効。列に入りきらない値は切り詰めず、DB エラーになる。そのため入力チェックの上限は列の大きさ以下にする | `config/database.php`、`docs/validation-rules.md` |
 | 削除           | 物理削除（`SoftDeletes` は使わない）。論理削除では外部キーの cascade が働かないため          | Q-12                                  |
 | 平均評価・件数 | 列に持たず、表示のたびに `withAvg`・`withCount` で集計する                                 | `docs/screen-items.md`                |
-| 中間テーブル   | 2 列の複合主キー（`id` なし）、`created_at`・`updated_at` あり                             | －                                    |
+| 中間テーブル   | すべて `id`（主キー）と `created_at`・`updated_at` を持つ。2 つの外部キーの組には、複合ユニーク制約を付ける | お客さんの指摘 |
 
 ### 表の見かた
 
@@ -57,7 +57,7 @@
 | 4   | `author`         | 著者     | `VARCHAR(255)`（`string()`）             |      |      | 255 文字          |                                                         |
 | 5   | `isbn`           | ISBN     | `VARCHAR(13)`（`string('isbn', 13)`）    |      | UK   | 数字 13 桁        | ハイフン無しの ISBN-13                                  |
 | 6   | `published_date` | 出版日   | `DATE`（`date()`）                       |      |      | －                | ★応用機能で NULL 可に変える（★DR01）                    |
-| 7   | `description`    | 説明     | `TEXT`（`text()`）                       | ○    |      | 16,000 文字       | `TEXT` には、どんな文字でも 16,000 文字ほどまで入る。お客さんの回答は「上限なし」で、この上限でよいかは Q-64 で確認中 |
+| 7   | `description`    | 説明     | `TEXT`（`text()`）                       | ○    |      | 16,000 文字       | `TEXT` には、どんな文字でも 16,000 文字ほどまで入る。お客さんの回答は「上限なし」だったが、この上限でよいことを確認した（Q-64） |
 | 8   | `image_url`      | 画像URL  | `VARCHAR(255)`（`string()`）             | ○    |      | 255 文字          |                                                         |
 | 9   | `created_at`     | 登録日時 | `TIMESTAMP`                              | ○    |      | －                | 書籍一覧などの「最新順」に使う（Q-13）                  |
 | 10  | `updated_at`     | 更新日時 | `TIMESTAMP`                              | ○    |      | －                |                                                         |
@@ -79,12 +79,13 @@
 
 | No. | 列名         | 論理名     | 型                                   | NULL | キー   | 備考                                                    |
 | --- | ------------ | ---------- | ------------------------------------ | ---- | ------ | ------------------------------------------------------- |
-| 1   | `book_id`    | 書籍ID     | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `books.id` を参照。書籍を削除すると一緒に削除（cascade、Q-12） |
-| 2   | `genre_id`   | ジャンルID | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `genres.id` を参照。紐付いているジャンルは削除させない（Q-17） |
-| 3   | `created_at` | 紐付け日時 | `TIMESTAMP`                          | ○    |        | `withTimestamps()` で入れる                             |
-| 4   | `updated_at` | 更新日時   | `TIMESTAMP`                          | ○    |        | 同上                                                    |
+| 1   | `id`         | ID         | `BIGINT UNSIGNED`（`id()`）          |      | PK     | 自動採番                                                |
+| 2   | `book_id`    | 書籍ID     | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `books.id` を参照。書籍を削除すると一緒に削除（cascade、Q-12）。`genre_id` との組でユニーク |
+| 3   | `genre_id`   | ジャンルID | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `genres.id` を参照。紐付いているジャンルは削除させない（Q-17）。`book_id` との組でユニーク |
+| 4   | `created_at` | 紐付け日時 | `TIMESTAMP`                          | ○    |        | `withTimestamps()` で入れる                             |
+| 5   | `updated_at` | 更新日時   | `TIMESTAMP`                          | ○    |        | 同上                                                    |
 
-- 主キーは `book_id`, `genre_id` の順。
+- 主キーは `id`。`(book_id, genre_id)` にユニーク制約を付けて、同じ書籍に同じジャンルを 2 回は付けられない。
 
 ### reviews（レビュー）
 
@@ -115,7 +116,7 @@
 | 5   | `updated_at` | 更新日時     | `TIMESTAMP`                          | ○    |        | 同上                                                    |
 
 - 主キーは `id`。`(user_id, book_id)` にユニーク制約を付けて、同じ書籍を 2 回お気に入りにはできない。
-- `id` を足す理由：お気に入り一覧は、追加日時（`created_at`）の新しい順に並べ、同じ日時のものは `id` の大きい順にする（Q-23・Q-50）。シーダーは複数のお気に入りを同じ秒に入れるため、これが無いと、ページ送りで書籍が重複したり抜けたりする。要件 DR05 は「ユーザーIDと書籍IDの組み合わせ」とだけ書いていて、列を限っていない。`review_likes` は並び順に使わないため、複合主キーのままにする。
+- `id` を足す理由：お気に入り一覧は、追加日時（`created_at`）の新しい順に並べ、同じ日時のものは `id` の大きい順にする（Q-23・Q-50）。シーダーは複数のお気に入りを同じ秒に入れるため、これが無いと、ページ送りで書籍が重複したり抜けたりする。要件 DR05 は「ユーザーIDと書籍IDの組み合わせ」とだけ書いていて、列を限っていない。`book_genre`・`review_likes` も、お客さんの指摘で、中間テーブルはすべて `id` を持つ形にそろえた。
 
 ### review_likes（いいね）
 
@@ -123,12 +124,13 @@
 
 | No. | 列名         | 論理名     | 型                                   | NULL | キー   | 備考                                                    |
 | --- | ------------ | ---------- | ------------------------------------ | ---- | ------ | ------------------------------------------------------- |
-| 1   | `user_id`    | ユーザーID | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `users.id` を参照。ユーザーは削除させない（Q-31）       |
-| 2   | `review_id`  | レビューID | `BIGINT UNSIGNED`（`foreignId()`）   |      | PK・FK | `reviews.id` を参照。レビューを削除すると一緒に削除（cascade、Q-12） |
-| 3   | `created_at` | いいね日時 | `TIMESTAMP`                          | ○    |        | 画面では使わない。`withTimestamps()` で入れる           |
-| 4   | `updated_at` | 更新日時   | `TIMESTAMP`                          | ○    |        | 同上                                                    |
+| 1   | `id`         | ID         | `BIGINT UNSIGNED`（`id()`）          |      | PK     | 自動採番                                                |
+| 2   | `user_id`    | ユーザーID | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `users.id` を参照。ユーザーは削除させない（Q-31）。`review_id` との組でユニーク |
+| 3   | `review_id`  | レビューID | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `reviews.id` を参照。レビューを削除すると一緒に削除（cascade、Q-12）。`user_id` との組でユニーク |
+| 4   | `created_at` | いいね日時 | `TIMESTAMP`                          | ○    |        | 画面では使わない。`withTimestamps()` で入れる           |
+| 5   | `updated_at` | 更新日時   | `TIMESTAMP`                          | ○    |        | 同上                                                    |
 
-- 主キーは `user_id`, `review_id` の順。同じレビューに 2 回いいねはできない。
+- 主キーは `id`。`(user_id, review_id)` にユニーク制約を付けて、同じレビューに 2 回いいねはできない。
 
 ## Laravel 標準のテーブル
 

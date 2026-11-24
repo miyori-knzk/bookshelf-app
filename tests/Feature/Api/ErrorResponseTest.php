@@ -11,7 +11,7 @@ use Tests\TestCase;
 /**
  * 段階 7：公開API のエラーの返し方（`docs/error-handling.md`「公開API の扱い」）。
  *
- * `/api/` の URL は、`Accept` ヘッダーが無くても JSON で返し、`message` を日本語にする（Q-53）。
+ * `/api/` の URL は、`Accept` ヘッダーが無くても JSON で返し、`error` を日本語にする（Q-53）。
  * Web のエラー画面は変えない。
  */
 class ErrorResponseTest extends TestCase
@@ -23,7 +23,7 @@ class ErrorResponseTest extends TestCase
         // `Accept` を付けない（`post()`）。Web なら入力画面へのリダイレクト（302）になるところ
         $response = $this->post('/api/v1/books', []);
 
-        $response->assertStatus(422)->assertJsonStructure(['message', 'errors']);
+        $response->assertStatus(422)->assertJsonStructure(['error', 'errors']);
         $this->assertStringContainsString('application/json', $response->headers->get('Content-Type'));
     }
 
@@ -43,8 +43,8 @@ class ErrorResponseTest extends TestCase
         $book = $this->getJson('/api/v1/books/9999');
         $path = $this->getJson('/api/v1/no-such-path');
 
-        $book->assertNotFound()->assertExactJson(['message' => '書籍が見つかりません。']);
-        $path->assertNotFound()->assertExactJson(['message' => '指定されたURLは存在しません。']);
+        $book->assertNotFound()->assertExactJson(['error' => '書籍が見つかりません。']);
+        $path->assertNotFound()->assertExactJson(['error' => '指定されたURLは存在しません。']);
         $this->assertStringNotContainsString('App\\Models', $book->getContent());
         $this->assertStringNotContainsString('App\\\\Models', $book->getContent());
     }
@@ -54,7 +54,7 @@ class ErrorResponseTest extends TestCase
         // `/api/v1/books` は、GET と POST だけ。DELETE は 405 になる
         $response = $this->deleteJson('/api/v1/books');
 
-        $response->assertStatus(405)->assertExactJson(['message' => 'このメソッドには対応していません。']);
+        $response->assertStatus(405)->assertExactJson(['error' => 'このメソッドには対応していません。']);
         $this->assertNotEmpty($response->headers->get('Allow'));
     }
 
@@ -64,8 +64,8 @@ class ErrorResponseTest extends TestCase
         $response = $this->postJson('/api/v1/books', []);
 
         $response->assertStatus(422);
-        $this->assertSame('登録者IDは必須です。 （ほか5件のエラー）', $response->json('message'));
-        $this->assertStringNotContainsString('more error', $response->json('message'));
+        $this->assertSame('登録者IDは必須です。 （ほか5件のエラー）', $response->json('error'));
+        $this->assertStringNotContainsString('more error', $response->json('error'));
     }
 
     public function test_validation_message_has_no_count_when_there_is_one_error(): void
@@ -82,7 +82,7 @@ class ErrorResponseTest extends TestCase
             'genres' => [$genre->id],
         ]);
 
-        $response->assertStatus(422)->assertJsonPath('message', 'ISBNは13桁の数字で入力してください。');
+        $response->assertStatus(422)->assertJsonPath('error', 'ISBNは13桁の数字で入力してください。');
     }
 
     public function test_rate_limit_allows_sixty_requests_per_minute_and_stops_the_sixty_first(): void
@@ -91,7 +91,7 @@ class ErrorResponseTest extends TestCase
 
         $this->getJson('/api/v1/books')
             ->assertStatus(429)
-            ->assertExactJson(['message' => 'リクエストが多すぎます。しばらくしてからもう一度お試しください。'])
+            ->assertExactJson(['error' => 'リクエストが多すぎます。しばらくしてからもう一度お試しください。'])
             ->assertHeader('Retry-After');
     }
 
@@ -102,7 +102,7 @@ class ErrorResponseTest extends TestCase
 
         $response = $this->getJson('/api/v1/test-error');
 
-        $response->assertStatus(500)->assertExactJson(['message' => 'サーバーでエラーが発生しました。']);
+        $response->assertStatus(500)->assertExactJson(['error' => 'サーバーでエラーが発生しました。']);
         $this->assertStringNotContainsString('秘密の内部情報', $response->getContent());
         $this->assertStringNotContainsString('SELECT', $response->getContent());
     }
@@ -114,7 +114,7 @@ class ErrorResponseTest extends TestCase
 
         $response = $this->get('/api/v1/test-error');
 
-        $response->assertStatus(500)->assertExactJson(['message' => 'サーバーでエラーが発生しました。']);
+        $response->assertStatus(500)->assertExactJson(['error' => 'サーバーでエラーが発生しました。']);
     }
 
     public function test_error_messages_are_not_unicode_escaped(): void

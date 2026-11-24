@@ -168,7 +168,7 @@ sequenceDiagram
     R->>FR: 入力チェック（user_id・ISBN の重なり・ジャンルの存在）
     FR->>DB: users・books・genres を読む
     alt 入力エラー
-        FR-->>A: 422（message・errors）
+        FR-->>A: 422（error・errors）
     end
     FR->>C: store(request)
     C->>DB: トランザクション開始
