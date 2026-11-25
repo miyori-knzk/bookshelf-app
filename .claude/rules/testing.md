@@ -10,8 +10,8 @@
 ## 置き場所と作り
 
 - 機能のテストは `tests/Feature/` に置く。画面（Web）も公開API も、ルートを呼んで確かめるものはこちら
-- `tests/Unit/` は、アプリを起動しない単体のテスト用。`PHPUnit\Framework\TestCase` を継承するので、DB もルートも使えない
-- `tests/Feature/` のクラスは `Tests\TestCase` を継承する
+- モデルの単体テストは `tests/Unit/Models/` に置く（要件「テスト要件」）。リレーションは実際にデータを取って確かめるので、DB を使う。ルートは呼ばない
+- `tests/Feature/` と、アプリや DB を使う `tests/Unit/` のクラスは `Tests\TestCase` を継承する
 - メソッド名は `test_` で始めるスネークケースにし、戻り値は `: void` と書く
 - データベースを使うテストには `use RefreshDatabase;` を付ける
 
