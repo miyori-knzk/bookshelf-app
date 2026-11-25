@@ -83,4 +83,4 @@
 | `components/*.blade.php`             | 画面の部品（レイアウト・ボタン・入力欄など）                         |
 | `layouts/navigation.blade.php`       | 画面の部品（app レイアウトのナビゲーション）                         |
 | 403・404 などのエラー画面            | ビューが無い（Q-47）                                                 |
-| ★応用機能の画面（★PG14〜★PG18）     | 今回の範囲外（`docs/features.md` の「今回作らないもの」）            |
+| ★応用機能の画面（★PG14〜★PG18）     | 段階 9 以降で作る（`docs/features.md`「実装の順序」）                |
