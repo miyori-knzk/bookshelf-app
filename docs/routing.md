@@ -108,4 +108,4 @@ Fortify が登録するルートをそのまま使う。自分では書かない
 | `GET /books`                               | 書籍一覧は `/` に置く（Q-01）   |
 | `GET /reviews`・`GET /reviews/{review}` など | レビューの一覧・詳細画面は無い。レビューは書籍詳細に表示する |
 | `GET /api/user`                            | 基本機能の API は認証しない（Q-35）        |
-| ★応用機能のルート（`/reports`・`/reading-plans`・`/notifications` など） | 今回の範囲外（`docs/features.md`） |
+| ★応用機能のルート（`/reports`・`/reading-plans`・`/notifications` など） | 段階 9 以降で作る（`docs/features.md`「実装の順序」） |
