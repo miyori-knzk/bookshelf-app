@@ -76,7 +76,7 @@ Windows 上の WSL（Ubuntu）で開発している。PHP・MySQL・Node.js は 
         -v "$(pwd):/var/www/html" \
         -w /var/www/html \
         -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
-        laravelsail/php84-composer:latest \
+        laravelsail/php82-composer:latest \
         composer install --ignore-platform-reqs
     ```
 
