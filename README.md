@@ -1,10 +1,159 @@
-# BookShelf
+# BookShelf 書籍レビューアプリ
 
-書籍レビューアプリ（Laravel 10・PHP 8.5・MySQL 8.4）。Blade の Web 画面と外部向けの公開API（JSON）を持つ。
+読んだ本を登録して、レビューを共有するためのアプリ。Blade の Web 画面と、外部向けの公開API（JSON）を持つ。
 設計書は [`docs/`](docs/) にある。実装と設計書が食い違ったら設計書を正とする。
 
+- [作成者](#作成者)
+- [使用技術](#使用技術)
+- [開発環境URL](#開発環境url)
+- [動作環境](#動作環境)
+- [環境構築手順](#環境構築手順)
+- [テスト](#テスト)
+- [機能一覧](#機能一覧)
 - [ER図](#er図)
-- [公開API のレスポンス構造](#公開api-のレスポンス構造)
+- [APIエンドポイント一覧](#apiエンドポイント一覧)
+- [開発ルールの例外](#開発ルールの例外)
+
+## 作成者
+
+赤池美優
+
+## 使用技術
+
+- **言語**：PHP 8.5
+- **フレームワーク**：Laravel 10
+- **認証**：Laravel Fortify（Web 画面のセッション認証）
+- **データベース**：MySQL 8.4
+- **データベース管理ツール**：phpMyAdmin
+- **フロントエンド**：Vite 5・Tailwind CSS 3・Alpine.js 3
+- **開発環境**：Docker（Laravel Sail）
+- **テストツール**：PHPUnit 10
+
+## 開発環境URL
+
+- アプリ：<http://localhost>
+- phpMyAdmin：<http://localhost:8080>
+
+## 動作環境
+
+Windows 上の WSL（Ubuntu）で開発している。PHP・MySQL・Node.js は Docker のコンテナで動くため、手元に必要なのは Git と Docker。
+
+## 環境構築手順
+
+コマンドは、Docker を起動した状態で、WSL（Ubuntu）のターミナルで実行する。
+
+1. **リポジトリをクローンする**
+
+    ```bash
+    git clone https://github.com/miyori-knzk/bookshelf-app.git
+    cd bookshelf-app
+    ```
+
+2. **`.env` を作る**
+
+    ```bash
+    cp .env.example .env
+    ```
+
+3. **`.env` のデータベースの設定を書き換える**
+
+    `.env.example` のままでは MySQL のコンテナが起動しないため、次の値にする。
+
+    ```
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=sail
+    DB_PASSWORD=password
+    ```
+
+4. **Composer の依存パッケージを入れる**
+
+    ```bash
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v "$(pwd):/var/www/html" \
+        -w /var/www/html \
+        -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
+        laravelsail/php84-composer:latest \
+        composer install --ignore-platform-reqs
+    ```
+
+5. **コンテナを起動する**
+
+    ```bash
+    ./vendor/bin/sail up -d
+    ```
+
+    初回はイメージの作成に時間がかかる。
+
+6. **アプリケーションキーを作る**
+
+    ```bash
+    ./vendor/bin/sail artisan key:generate
+    ```
+
+7. **テーブルを作り、初期データを入れる**
+
+    ```bash
+    ./vendor/bin/sail artisan migrate --seed
+    ```
+
+    接続エラーになったときは、MySQL の起動が終わっていないので、少し待ってから実行し直す。
+
+8. **画面の CSS と JavaScript をビルドする**
+
+    ```bash
+    ./vendor/bin/sail npm install
+    ./vendor/bin/sail npm run build
+    ```
+
+9. **ログインする**
+
+    <http://localhost/login> を開き、次のユーザーでログインする。
+
+    - メールアドレス：`yamada@example.com`
+    - パスワード：`password`
+
+    ほかに `suzuki@example.com`・`tanaka@example.com`・`sato@example.com`・`takahashi@example.com` も使える（パスワードはどれも `password`）。
+
+## テスト
+
+コンテナを起動してから実行する。
+
+```bash
+./vendor/bin/sail up -d
+./vendor/bin/sail test
+```
+
+テストは MySQL の `testing` データベースで動く（`phpunit.xml`）。普段使う `laravel` データベースのデータは消えない。`.env.testing` は作らなくてよい。
+
+- `sail artisan config:cache` を実行した状態でテストすると、`testing` ではなく `laravel` が対象になり、データが消える。先に `./vendor/bin/sail artisan config:clear` を実行する。
+- `testing` データベースは、MySQL のボリュームを最初に作るときにだけ作られる。「Unknown database 'testing'」で失敗するときは、次のコマンドで作る。
+
+    ```bash
+    ./vendor/bin/sail exec mysql mysql -uroot -ppassword \
+        -e 'CREATE DATABASE IF NOT EXISTS testing; GRANT ALL PRIVILEGES ON `testing%`.* TO "sail"@"%";'
+    ```
+
+## 機能一覧
+
+詳しくは [`docs/features.md`](docs/features.md) を参照。
+
+| 分類                   | 機能                                                                 | ログイン |
+| ---------------------- | -------------------------------------------------------------------- | -------- |
+| 書籍                   | 一覧・詳細                                                           | 不要     |
+|                        | 登録                                                                 | 必要     |
+|                        | 編集・削除（登録した本人だけ）                                       | 必要     |
+| ジャンル               | 一覧・詳細・登録・編集・削除（書籍が紐付いていると削除できない）     | 必要     |
+| レビュー               | 投稿                                                                 | 必要     |
+|                        | 編集・削除（投稿した本人だけ）                                       | 必要     |
+| いいね・お気に入り     | レビューへのいいね、書籍のお気に入り登録・解除、お気に入り一覧       | 必要     |
+| ランキング             | 平均評価の TOP10                                                     | 不要     |
+| 認証                   | 会員登録・ログイン                                                   | 不要     |
+|                        | ログアウト                                                           | 必要     |
+| 公開API                | 書籍の一覧・詳細・登録・更新・削除                                   | 不要     |
 
 ## ER図
 
@@ -94,7 +243,7 @@ erDiagram
 - ユーザーは削除しない。ジャンルは書籍が紐付いていると削除できない。
 - 同じユーザーが同じ書籍に何件でもレビューを書ける。
 
-## 公開API のレスポンス構造
+## APIエンドポイント一覧
 
 ベース URL は `http://localhost/api/v1`。認証なし。エラーも含めて JSON で返す（日本語はエスケープしない）。
 入力・エラーの詳細は [`docs/api-spec.md`](docs/api-spec.md) を参照。
@@ -106,6 +255,61 @@ erDiagram
 | POST     | `/books`        | 書籍を新規登録する | 201    |
 | PUT      | `/books/{book}` | 書籍を更新する     | 200    |
 | DELETE   | `/books/{book}` | 書籍を削除する     | 204    |
+
+更新は `PATCH` でも受け付ける。入力チェックは `PUT` と同じで、すべての項目を送る。
+
+### リクエストパラメーター
+
+POST・PUT の本文は JSON で送る（`Content-Type: application/json`）。`Accept: application/json` も付けることを勧める。
+
+#### パス（`GET`・`PUT`・`DELETE /books/{book}`）
+
+| 名前   | 型   | 必須 | 内容    |
+| ------ | ---- | ---- | ------- |
+| `book` | 整数 | ○    | 書籍 ID |
+
+`GET /books/{book}` と `DELETE /books/{book}` は、ほかのパラメーターが無い。
+
+#### 書籍一覧のクエリ文字列（`GET /books`）
+
+すべて任意。空の値（`?keyword=`）は、指定しなかったのと同じ扱い。
+
+| 名前       | 型     | 内容                                   | ルール                |
+| ---------- | ------ | -------------------------------------- | --------------------- |
+| `keyword`  | 文字列 | タイトルか著者の部分一致で絞る         | 255 文字以内          |
+| `genre_id` | 整数   | このジャンルが付いた書籍に絞る         | 存在するジャンルの ID |
+| `page`     | 整数   | ページ番号（指定が無ければ 1）         | 1 以上                |
+| `per_page` | 整数   | 1 ページの件数（指定が無ければ 20）    | 1〜100                |
+
+`keyword` と `genre_id` を両方指定すると、両方に当てはまる書籍に絞る。
+
+#### 書籍登録・更新の本文（`POST /books`・`PUT /books/{book}`）
+
+| 名前             | 型            | 必須（登録） | 必須（更新） | ルール                                           |
+| ---------------- | ------------- | ------------ | ------------ | ------------------------------------------------ |
+| `user_id`        | 整数          | ○            |              | 存在するユーザーの ID（登録者）                  |
+| `title`          | 文字列        | ○            | ○            | 255 文字以内                                     |
+| `author`         | 文字列        | ○            | ○            | 255 文字以内                                     |
+| `isbn`           | 文字列        | ○            | ○            | ハイフン無しの数字 13 桁。ほかの書籍と重ならない |
+| `published_date` | 文字列        | ○            | ○            | 日付（`YYYY-MM-DD`）                             |
+| `description`    | 文字列 / null |              |              | 16000 文字以内                                   |
+| `image_url`      | 文字列 / null |              |              | URL の形式・255 文字以内                         |
+| `genres`         | 整数の配列    | ○            | ○            | 1 つ以上。どれも存在するジャンルの ID            |
+
+更新で `user_id` を送ると登録者が変わる。送らなければ変わらない。
+
+```json
+{
+  "user_id": 2,
+  "title": "リーダブルコード",
+  "author": "Dustin Boswell",
+  "isbn": "9784873115659",
+  "published_date": "2012-06-23",
+  "description": null,
+  "image_url": null,
+  "genres": [3]
+}
+```
 
 ### 書籍一覧（`GET /books`）
 
@@ -226,3 +430,9 @@ Laravel 標準のページ分け（`data`・`links`・`meta`）。クエリは `
   }
 }
 ```
+
+## 開発ルールの例外
+
+入力チェックは FormRequest に分けるルールだが、会員登録だけは例外として、
+[`app/Actions/Fortify/CreateNewUser.php`](app/Actions/Fortify/CreateNewUser.php) の中で `Validator::make()` を使って書いている。
+Fortify の会員登録が、このクラスを呼んで入力チェックとユーザー作成を行う作りのため。
