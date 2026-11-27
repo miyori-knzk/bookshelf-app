@@ -8,6 +8,8 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ForeignKeyTest extends TestCase
@@ -127,5 +129,108 @@ class ForeignKeyTest extends TestCase
         Review::factory()->create(['user_id' => $review->user_id, 'book_id' => $review->book_id]);
 
         $this->assertSame(2, Review::count());
+    }
+
+    public function test_isbn_and_published_date_can_be_null(): void
+    {
+        Book::factory()->count(2)->create(['isbn' => null, 'published_date' => null]);
+
+        $this->assertSame(2, Book::whereNull('isbn')->whereNull('published_date')->count());
+    }
+
+    public function test_a_book_with_reading_plans_cannot_be_deleted(): void
+    {
+        $book = Book::factory()->create();
+        $this->insertReadingPlan(User::factory()->create(), $book, ['status' => 'completed']);
+
+        $this->expectException(QueryException::class);
+
+        $book->delete();
+    }
+
+    public function test_a_user_with_reading_plans_cannot_be_deleted(): void
+    {
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+        $this->insertReadingPlan($user, $book);
+
+        $this->expectException(QueryException::class);
+
+        $user->delete();
+    }
+
+    public function test_a_reading_plan_is_in_progress_by_default(): void
+    {
+        $this->insertReadingPlan(User::factory()->create(), Book::factory()->create());
+
+        $this->assertDatabaseHas('reading_plans', ['status' => 'in_progress', 'completed_at' => null]);
+    }
+
+    public function test_a_reading_plan_accepts_completed_and_expired_status(): void
+    {
+        $user = User::factory()->create();
+
+        $this->insertReadingPlan($user, Book::factory()->create(), ['status' => 'completed']);
+        $this->insertReadingPlan($user, Book::factory()->create(), ['status' => 'expired']);
+
+        $this->assertDatabaseCount('reading_plans', 2);
+    }
+
+    public function test_a_reading_plan_rejects_an_unknown_status(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $this->expectException(QueryException::class);
+
+        $this->insertReadingPlan($user, $book, ['status' => 'unknown']);
+    }
+
+    public function test_the_same_user_cannot_plan_the_same_book_twice(): void
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+        $this->insertReadingPlan($user, $book, ['status' => 'completed']);
+
+        $this->expectException(QueryException::class);
+
+        $this->insertReadingPlan($user, $book);
+    }
+
+    public function test_different_users_can_plan_the_same_book(): void
+    {
+        $book = Book::factory()->create();
+
+        $this->insertReadingPlan(User::factory()->create(), $book);
+        $this->insertReadingPlan(User::factory()->create(), $book);
+
+        $this->assertDatabaseCount('reading_plans', 2);
+    }
+
+    public function test_a_notification_can_be_saved_for_a_user(): void
+    {
+        $user = User::factory()->create();
+
+        $user->notifications()->create([
+            'id' => Str::uuid()->toString(),
+            'type' => 'test',
+            'data' => ['title' => '件名'],
+        ]);
+
+        $this->assertSame(['title' => '件名'], $user->unreadNotifications()->firstOrFail()->data);
+    }
+
+    /**
+     * 読書計画の行を作る。`ReadingPlan` モデルを作る段階 12 で、Eloquent に書き換える。
+     *
+     * @param  array<string, mixed>  $attributes  上書きする列
+     */
+    private function insertReadingPlan(User $user, Book $book, array $attributes = []): void
+    {
+        DB::table('reading_plans')->insert(array_merge([
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+            'target_date' => '2026-12-01',
+        ], $attributes));
     }
 }

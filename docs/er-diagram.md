@@ -1,11 +1,11 @@
 # ER図
 
-アプリのテーブルと、そのつながりを図にしたもの。範囲は基本機能のみ（`docs/features.md` 参照）。
+アプリのテーブルと、そのつながりを図にしたもの。範囲は基本機能と、★応用機能の段階 9-1 で作ったテーブル・列（`docs/features.md` 参照）。
 列の型・制約の詳細は `docs/table-definitions.md`、機能ごとのテーブル操作は `docs/crud-matrix.md` を参照。
 
 - 中間テーブルの名前（`book_genre`・`favorites`・`review_likes`）は Q-49 の想定。中間テーブルはすべて `id`（主キー）と `created_at`・`updated_at` を持ち、2 つの外部キーの組に複合ユニーク制約を付ける。
 - Laravel 標準のテーブル（`password_reset_tokens`・`failed_jobs`・`personal_access_tokens`）は、アプリのテーブルとつながらないため図に入れない。`docs/table-definitions.md` の「Laravel 標準のテーブル」を参照。
-- ★応用機能のテーブル（読書計画・通知）は入れない。
+- ★応用機能の通知（`notifications`）は Laravel 標準のテーブルだが、ユーザー宛ての行を持つため図に入れる。外部キーは無いので、点線で表す。
 
 ## 図
 
@@ -20,6 +20,9 @@ erDiagram
     books ||--o{ favorites : "お気に入りにされる"
     users ||--o{ review_likes : "いいねする"
     reviews ||--o{ review_likes : "いいねされる"
+    users ||--o{ reading_plans : "読書計画を立てる"
+    books ||--o{ reading_plans : "計画の対象になる"
+    users ||..o{ notifications : "通知を受け取る（外部キー無し）"
 
     users {
         bigint id PK
@@ -37,8 +40,8 @@ erDiagram
         bigint user_id FK "登録者"
         varchar title
         varchar author
-        varchar isbn UK "13桁"
-        date published_date
+        varchar isbn UK "13桁、任意"
+        date published_date "任意"
         text description "任意"
         varchar image_url "任意"
         timestamp created_at
@@ -85,6 +88,28 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+
+    reading_plans {
+        bigint id PK
+        bigint user_id FK,UK "計画者。book_idと複合ユニーク"
+        bigint book_id FK,UK
+        date target_date
+        enum status "初期値は in_progress"
+        timestamp completed_at "任意"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    notifications {
+        char id PK "UUID"
+        varchar type
+        varchar notifiable_type "受信者の種類"
+        bigint notifiable_id "受信者のID"
+        text data
+        timestamp read_at "任意"
+        timestamp created_at
+        timestamp updated_at
+    }
 ```
 
 ## つながり
@@ -100,9 +125,12 @@ erDiagram
 | `books`  | `favorites`    | 多対多の片側 | 同上                                   | 一緒に削除（cascade）  | DR05、Q-12     |
 | `users`  | `review_likes` | 多対多の片側 | ユーザーがレビューにいいねする         | 削除させない           | DR06、Q-31     |
 | `reviews`| `review_likes` | 多対多の片側 | 同上                                   | 一緒に削除（cascade）  | DR06、Q-12     |
+| `users`  | `reading_plans` | 1 対 多     | ユーザーが読書計画を立てる             | 削除させない           | ★DR09、Q-31    |
+| `books`  | `reading_plans` | 1 対 多     | 書籍が読書計画の対象になる             | 削除させない           | ★DR09、Q-82    |
+| `users`  | `notifications` | 1 対 多     | ユーザーが通知を受け取る               | 通知は残る（外部キーが無い） | ★DR10    |
 
-- 「削除させない」は、子の行が残っていると親の行を削除できない（外部キーの既定の動き）。`users` は退会を作らないため削除されない（Q-31）。`genres` は書籍が紐付いていると削除できない（Q-17）。
-- 書籍を削除すると、`reviews` が cascade で消え、そのレビューの `review_likes` も続けて cascade で消える（Q-12）。削除のしかたは Q-05。
+- 「削除させない」は、子の行が残っていると親の行を削除できない（外部キーの既定の動き）。`users` は退会を作らないため削除されない（Q-31）。`genres` は書籍が紐付いていると削除できない（Q-17）。`books` は読書計画があると削除できない（Q-82）。
+- 書籍を削除すると、`reviews` が cascade で消え、そのレビューの `review_likes` も続けて cascade で消える（Q-12）。削除のしかたは Q-05。読書計画（`reading_plans`）がある書籍は削除できない（Q-82）。
 - 書籍には必ず 1 つ以上のジャンルを付ける（入力チェック、`docs/validation-rules.md`）。そのため図では、書籍側を「1 以上」（`|{`）にしている。DB の制約ではなく、アプリの入力チェックで守る。
 - 同じユーザーが同じ書籍に何件でもレビューを書ける（Q-20）ため、`reviews` には `user_id` と `book_id` の組み合わせのユニーク制約を付けない。
 
