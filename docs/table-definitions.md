@@ -1,6 +1,6 @@
 # テーブル定義書
 
-テーブルごとの列・型・制約をまとめたもの。範囲は基本機能のみ（`docs/features.md` 参照）。
+テーブルごとの列・型・制約をまとめたもの。範囲は基本機能と、★応用機能の段階 9-1 で作ったテーブル・列（`docs/features.md` 参照）。
 テーブルのつながりは `docs/er-diagram.md`、機能ごとのテーブル操作は `docs/crud-matrix.md` を参照。
 
 ## 共通
@@ -55,8 +55,8 @@
 | 2   | `user_id`        | 登録者ID | `BIGINT UNSIGNED`（`foreignId()`）       |      | FK   | －                | `users.id` を参照。ユーザーは削除させない（Q-31）。公開API では、リクエストの `user_id` を入れる（Q-26） |
 | 3   | `title`          | タイトル | `VARCHAR(255)`（`string()`）             |      |      | 255 文字          |                                                         |
 | 4   | `author`         | 著者     | `VARCHAR(255)`（`string()`）             |      |      | 255 文字          |                                                         |
-| 5   | `isbn`           | ISBN     | `VARCHAR(13)`（`string('isbn', 13)`）    |      | UK   | 数字 13 桁        | ハイフン無しの ISBN-13                                  |
-| 6   | `published_date` | 出版日   | `DATE`（`date()`）                       |      |      | －                | ★応用機能で NULL 可に変える（★DR01）                    |
+| 5   | `isbn`           | ISBN     | `VARCHAR(13)`（`string('isbn', 13)`）    | ○    | UK   | 数字 13 桁        | ハイフン無しの ISBN-13。★応用機能で NULL 可にした（Q-80）。NULL どうしは重複にならない。入力チェックは段階 9-6 まで必須のまま |
+| 6   | `published_date` | 出版日   | `DATE`（`date()`）                       | ○    |      | －                | ★応用機能で NULL 可にした（★DR01）。入力チェックは段階 9-6 まで必須のまま |
 | 7   | `description`    | 説明     | `TEXT`（`text()`）                       | ○    |      | 16,000 文字       | `TEXT` には、どんな文字でも 16,000 文字ほどまで入る。お客さんの回答は「上限なし」だったが、この上限でよいことを確認した（Q-64） |
 | 8   | `image_url`      | 画像URL  | `VARCHAR(255)`（`string()`）             | ○    |      | 255 文字          |                                                         |
 | 9   | `created_at`     | 登録日時 | `TIMESTAMP`                              | ○    |      | －                | 書籍一覧などの「最新順」に使う（Q-13）                  |
@@ -132,21 +132,33 @@
 
 - 主キーは `id`。`(user_id, review_id)` にユニーク制約を付けて、同じレビューに 2 回いいねはできない。
 
+### reading_plans（読書計画）
+
+要件 ★DR09。★応用機能。列名は、提供される Advanced 版のビューが使う名前に合わせる。
+
+| No. | 列名           | 論理名     | 型                                   | NULL | キー | 備考                                                                 |
+| --- | -------------- | ---------- | ------------------------------------ | ---- | ---- | -------------------------------------------------------------------- |
+| 1   | `id`           | ID         | `BIGINT UNSIGNED`（`id()`）          |      | PK   | 自動採番                                                             |
+| 2   | `user_id`      | 計画者ID   | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `users.id` を参照。ユーザーは削除させない（Q-31）。`book_id` との組でユニーク |
+| 3   | `book_id`      | 書籍ID     | `BIGINT UNSIGNED`（`foreignId()`）   |      | FK・UK | `books.id` を参照。読書計画がある書籍は削除させない（Q-82）。`user_id` との組でユニーク |
+| 4   | `target_date`  | 期日       | `DATE`（`date()`）                   |      |      | モデルで `date` の cast が必要（ビューが `format()` を呼ぶ）         |
+| 5   | `status`       | 状態       | `ENUM`（`enum()`）                   |      |      | `in_progress`（進行中）・`completed`（読了）・`expired`（期限切れ）。初期値は `in_progress`（Q-83） |
+| 6   | `completed_at` | 完了日     | `TIMESTAMP`（`timestamp()`）         | ○    |      | 画面には日付だけを出す。モデルで `datetime` の cast が必要           |
+| 7   | `created_at`   | 登録日時   | `TIMESTAMP`                          | ○    |      |                                                                      |
+| 8   | `updated_at`   | 更新日時   | `TIMESTAMP`                          | ○    |      |                                                                      |
+
+- 状態の画面での名前は、段階 12 で決める。
+- `(user_id, book_id)` にユニーク制約を付けて、同じ利用者が同じ書籍の計画を 2 件持てないようにする（状態を問わない、Q-84）。画面のエラーメッセージは、段階 12 の入力チェックで出す。
+
 ## Laravel 標準のテーブル
 
-要件 DR08。Laravel 標準のマイグレーションをそのまま使う。どれも基本機能では読み書きしない（`docs/crud-matrix.md` に列を設けていない）。
+要件 DR08・★DR10。Laravel 標準のマイグレーションをそのまま使う。どれも基本機能では読み書きしない（`docs/crud-matrix.md` に列を設けていない）。
 
 | テーブル                 | 列                                                                                         | 基本機能での扱い                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `password_reset_tokens`  | `email`（PK）・`token`・`created_at`                                                       | パスワードリセットを作らないため使わない（Q-29）                       |
 | `failed_jobs`            | `id`（PK）・`uuid`（UK）・`connection`・`queue`・`payload`・`exception`・`failed_at`        | 基本機能にはキューで動かす処理が無いため、行は入らない |
 | `personal_access_tokens` | `id`（PK）・`tokenable_type`・`tokenable_id`・`name`・`token`（UK）・`abilities`・`last_used_at`・`expires_at`・`created_at`・`updated_at` | 基本機能の公開API は認証なしのため使わない（Q-35）。★応用機能の Sanctum で使う |
+| `notifications`          | `id`（PK、UUID）・`type`・`notifiable_type`・`notifiable_id`・`data`・`read_at`・`created_at`・`updated_at` | ★応用機能の通知（★DR10）で使う（段階 13）。受信者は `notifiable_type`・`notifiable_id` で持ち、外部キーは無い |
 
 - セッション・キャッシュは `file` に保存するため、`sessions`・`cache` テーブルは作らない。
-
-## 作らないテーブル
-
-| テーブル           | 理由                                                         |
-| ------------------ | ------------------------------------------------------------ |
-| 読書計画（★DR09） | ★応用機能。テーブル名・構造は応用機能を作るときに設計する     |
-| `notifications`（★DR10） | ★応用機能                                              |
