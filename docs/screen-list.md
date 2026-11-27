@@ -2,7 +2,7 @@
 
 `resources/views/` 配下のビュー（以下「ビュー」）をもとに、画面を一覧にしたもの。
 画面 ID は SC-01 からの連番で、要件の画面 ID（PG01〜PG13）と同じ順に並べている。
-範囲は基本機能のみ（`docs/features.md` 参照）。未確定の点は `docs/questions.md` の確認事項（Q-xx）を参照。
+範囲は基本機能の画面と、段階 9-2 で反映した Advanced 版ビューで変わった内容（`docs/features.md` 参照）。未確定の点は `docs/questions.md` の確認事項（Q-xx）を参照。
 
 関連する設計書：
 
@@ -14,16 +14,16 @@
 
 | 画面ID | 画面名         | 要件   | URL（GET）               | ルート名          | ビュー                    | レイアウト | 認証 / 認可      | 主な表示内容・操作                                                                                     | 機能        |
 | ------ | -------------- | ------ | ------------------------ | ----------------- | ------------------------- | ---------- | ---------------- | ------------------------------------------------------------------------------------------------------ | ----------- |
-| SC-01  | 書籍一覧       | PG01   | `/`（Q-01）              | `books.index`     | `books/index.blade.php`   | app        | 不要             | 書籍カード（画像・タイトル・著者・ジャンル・平均評価）、ページ送り、「書籍を登録」ボタン                 | F-01        |
+| SC-01  | 書籍一覧       | PG01   | `/`（Q-01）              | `books.index`     | `books/index.blade.php`   | app        | 不要             | 検索フォーム（キーワード・ジャンル・並び順。絞り込みは段階 10 で作る）、書籍カード（画像・タイトル・著者・ジャンル・平均評価）、ページ送り、「書籍を登録」ボタン | F-01        |
 | SC-02  | 書籍詳細       | PG02   | `/books/{book}`          | `books.show`      | `books/show.blade.php`    | app        | 不要             | 書籍情報、お気に入り、編集・削除（作成者のみ）、レビュー投稿フォーム、レビュー一覧（いいね・編集・削除） | F-02・F-05・F-11・F-13〜F-15 |
-| SC-03  | 書籍登録       | PG03   | `/books/create`          | `books.create`    | `books/create.blade.php`（`books/_form.blade.php`） | app | 必要             | 書籍の入力フォーム（ジャンルはチェックボックス）                                                       | F-03        |
-| SC-04  | 書籍編集       | PG04   | `/books/{book}/edit`     | `books.edit`      | `books/edit.blade.php`（`books/_form.blade.php`）   | app | 必要＋作成者のみ | 書籍の入力フォーム（登録内容を初期表示）                                                               | F-04        |
+| SC-03  | 書籍登録       | PG03   | `/books/create`          | `books.create`    | `books/create.blade.php`（`books/_form.blade.php`） | app | 必要             | ISBN 検索欄（本体は段階 11）、書籍の入力フォーム（ジャンルはチェックボックス）                         | F-03        |
+| SC-04  | 書籍編集       | PG04   | `/books/{book}/edit`     | `books.edit`      | `books/edit.blade.php`（`books/_form.blade.php`）   | app | 必要＋作成者のみ | ISBN 検索欄（本体は段階 11）、書籍の入力フォーム（登録内容を初期表示）                                 | F-04        |
 | SC-05  | ジャンル一覧   | PG05   | `/genres`                | `genres.index`    | `genres/index.blade.php`  | app        | 必要             | ジャンル名・書籍数の表、編集・削除、「ジャンルを登録」ボタン                                           | F-06・F-10  |
 | SC-06  | ジャンル詳細   | PG06   | `/genres/{genre}`        | `genres.show`     | `genres/show.blade.php`   | app        | 必要             | そのジャンルの書籍カード（画像・タイトル・著者・ジャンル）、ページ送り                                 | F-07        |
 | SC-07  | ジャンル登録   | PG07   | `/genres/create`         | `genres.create`   | `genres/create.blade.php` | app        | 必要             | ジャンル名の入力フォーム                                                                               | F-08        |
 | SC-08  | ジャンル編集   | PG08   | `/genres/{genre}/edit`   | `genres.edit`     | `genres/edit.blade.php`   | app        | 必要             | ジャンル名の入力フォーム（登録内容を初期表示）                                                         | F-09        |
 | SC-09  | レビュー編集   | PG09   | `/reviews/{review}/edit` | `reviews.edit`    | `reviews/edit.blade.php`  | app        | 必要＋投稿者のみ | 対象の書籍名、評価（ラジオボタン）・コメントの入力フォーム                                             | F-12        |
-| SC-10  | お気に入り一覧 | PG10   | `/favorites`             | `favorites.index` | `favorites/index.blade.php` | app      | 必要             | お気に入り書籍（画像・タイトル・著者・ISBN）、解除ボタン、ページ送り                                   | F-15・F-16  |
+| SC-10  | お気に入り一覧 | PG10   | `/favorites`             | `favorites.index` | `favorites/index.blade.php` | app      | 必要             | お気に入り書籍（画像・タイトル・著者・ISBN。無いときは「未登録」）、解除ボタン、ページ送り             | F-15・F-16  |
 | SC-11  | ランキング     | PG11   | `/ranking`               | `ranking.index`   | `ranking/index.blade.php` | app        | 不要             | 平均評価 TOP10（順位・画像・タイトル・著者・平均評価・レビュー件数）                                   | F-17        |
 | SC-12  | ログイン       | PG12   | `/login`                 | `login`           | `auth/login.blade.php`    | guest      | 不要             | メールアドレス・パスワードの入力フォーム、会員登録へのリンク                                           | F-19        |
 | SC-13  | 会員登録       | PG13   | `/register`              | `register`        | `auth/register.blade.php` | guest      | 不要             | お名前・メールアドレス・パスワード・パスワード確認の入力フォーム、ログインへのリンク                   | F-18        |
@@ -61,6 +61,7 @@
 | 書籍登録         | `books.store`      | SC-03               | なし           | F-03 |
 | 書籍更新         | `books.update`     | SC-04               | なし           | F-04 |
 | 書籍削除         | `books.destroy`    | SC-02               | あり           | F-05 |
+| ISBN 検索        | `books.isbn`（GET、画面の JavaScript が呼ぶ） | SC-03・SC-04 | なし | F-27 |
 | ジャンル登録     | `genres.store`     | SC-07               | なし           | F-08 |
 | ジャンル更新     | `genres.update`    | SC-08               | なし           | F-09 |
 | ジャンル削除     | `genres.destroy`   | SC-05               | あり           | F-10 |
@@ -83,4 +84,4 @@
 | `components/*.blade.php`             | 画面の部品（レイアウト・ボタン・入力欄など）                         |
 | `layouts/navigation.blade.php`       | 画面の部品（app レイアウトのナビゲーション）                         |
 | 403・404 などのエラー画面            | ビューが無い（Q-47）                                                 |
-| ★応用機能の画面（★PG14〜★PG18）     | 段階 9 以降で作る（`docs/features.md`「実装の順序」）                |
+| ★応用機能の画面（★PG14〜★PG18）     | ビューとルートは段階 9-2 で置いた。画面は段階 12〜14 で作り、そのときに足す（`docs/features.md`「実装の順序」） |

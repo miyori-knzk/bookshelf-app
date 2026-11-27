@@ -124,6 +124,14 @@ class BookControllerTest extends TestCase
         $this->assertSame([['id' => $this->genre->id, 'name' => '小説']], $book['genres']);
     }
 
+    public function test_published_date_is_null_when_missing(): void
+    {
+        $book = $this->createBook(['published_date' => null]);
+
+        $this->getJson('/api/v1/books')->assertOk()->assertJsonPath('data.0.published_date', null);
+        $this->getJson("/api/v1/books/{$book->id}")->assertOk()->assertJsonPath('data.published_date', null);
+    }
+
     public function test_index_user_has_only_id_and_name(): void
     {
         $this->createBook();

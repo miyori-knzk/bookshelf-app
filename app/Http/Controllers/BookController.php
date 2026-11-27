@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 
@@ -119,5 +120,16 @@ class BookController extends Controller
         $book->delete();
 
         return redirect()->route('books.index')->with('success', '書籍を削除しました。');
+    }
+
+    /**
+     * ISBN から書籍情報を取得する（F-27）。
+     *
+     * 本体は段階 11 で作る。それまでは `error` を付けた 501 を返す（Q-85）。登録・編集画面は、
+     * `error` が無いと成功として扱い、入力欄を空にするため。
+     */
+    public function searchByIsbn(): JsonResponse
+    {
+        return response()->json(['error' => 'ISBN検索はまだ使えません。'], 501);
     }
 }

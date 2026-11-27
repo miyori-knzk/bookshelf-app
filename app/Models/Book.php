@@ -34,6 +34,17 @@ class Book extends Model
     ];
 
     /**
+     * 型を変換する属性。
+     *
+     * 出版日は、書籍詳細と編集のビューが `format()` を呼ぶため、日付にする。
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'published_date' => 'date',
+    ];
+
+    /**
      * 登録者。
      */
     public function user(): BelongsTo
