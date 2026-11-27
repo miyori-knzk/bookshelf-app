@@ -1,6 +1,6 @@
 # テスト観点
 
-何を確かめるかを、抜けが出ないように並べたもの。範囲は基本機能と、★応用機能の段階 9-1 の DB の制約（TP-16-13〜16-16）。
+何を確かめるかを、抜けが出ないように並べたもの。範囲は基本機能と、★応用機能の段階 9-1 の DB の制約（TP-16-13〜16-16）、段階 9-2 の反映（TP-3-8・4-21・5-17・6-14・8-12・16-17）。
 人が手で試す行は `docs/acceptance-criteria.md` に絞り、網羅はこちらに置く。観点までを書き、入力値の組み合わせは書き出さない。
 
 - TP の 16 は、画面をまたぐ観点（受け入れ条件の 16 とは別）。
@@ -45,8 +45,9 @@
 | TP-3-3 | 登録日時の新しい順に並び、同じ日時は ID の大きい順になる（Q-13・Q-50） | 正常系 | `docs/questions.md`、`docs/table-definitions.md` |
 | TP-3-4 | 平均評価が、レビューのある書籍と無い書籍で、ビューのとおりに表示される | 正常系 | `docs/screen-items.md` |
 | TP-3-5 | 10 件までは 1 ページに収まり、11 件で 2 ページになる | 境界値 | `docs/features.md` |
-| TP-3-6 | 0 件のとき「書籍が登録されていません。」が出る | 境界値 | `books/index.blade.php`（文言は設計書に無い） |
+| TP-3-6 | 0 件のとき「書籍が見つかりませんでした。」が出る | 境界値 | `books/index.blade.php`（文言は設計書に無い） |
 | TP-3-7 | 書籍の件数が増えても、実行する SQL の数が増えない（N+1 が無い） | 正常系 | `docs/screen-items.md` |
+| TP-3-8 | ログイン中のナビゲーションに「マイレポート」「読書計画」と通知のベルがあり、一覧がエラーにならず表示される | 正常系 | `docs/screen-transitions.md` |
 
 ## 4. 書籍詳細画面
 
@@ -72,6 +73,7 @@
 | TP-4-18 | 作成者以外の書籍削除の送信は 403 になり、消えない（Q-47） | 異常系 | `docs/permission-matrix.md` |
 | TP-4-19 | 存在しない ID の書籍詳細は 404 になる | 異常系 | `docs/error-handling.md` |
 | TP-4-20 | ビューのリレーション名で読めて、レビュー件数が増えても SQL の数が増えない（N+1 が無い） | 正常系 | `docs/screen-items.md`、`docs/er-diagram.md` |
+| TP-4-21 | ISBN と出版日が無い書籍は、どちらも「未登録」になる（Q-80） | 境界値 | `docs/screen-items.md` |
 
 ## 5. 書籍登録画面
 
@@ -93,6 +95,7 @@
 | TP-5-14 | `book_genre` の書き込みで失敗すると、`books` の行も残らない（Q-05） | 異常系 | `docs/error-handling.md` |
 | TP-5-15 | 未ログインでは開けず、送信しても保存されない | 異常系 | `docs/permission-matrix.md` |
 | TP-5-16 | ジャンルのチェックボックスが、名前順に並ぶ（Q-68） | 正常系 | `docs/screen-items.md`、`docs/questions.md` |
+| TP-5-17 | ISBN 検索は、段階 11 まで 501 と `error` を返し、未ログインでは使えない（Q-85） | 異常系 | `docs/routing.md`、`docs/questions.md` |
 
 ## 6. 書籍編集画面
 
@@ -111,6 +114,7 @@
 | TP-6-11 | 存在しない ID は 404 になる | 異常系 | `docs/error-handling.md` |
 | TP-6-12 | 途中で失敗すると、`books` の更新も残らない（Q-05） | 異常系 | `docs/error-handling.md` |
 | TP-6-13 | ジャンルのチェックボックスが、名前順に並ぶ（Q-68） | 正常系 | `docs/screen-items.md`、`docs/questions.md` |
+| TP-6-14 | ISBN と出版日が無い書籍の編集画面が、2 つの欄を空にして開く（Q-80） | 境界値 | `docs/screen-items.md` |
 
 ## 7. レビュー編集画面
 
@@ -141,6 +145,7 @@
 | TP-8-9 | 追加日時が同じお気に入りは、`favorites.id` の大きい順に並ぶ（Q-50） | 境界値 | `docs/table-definitions.md` |
 | TP-8-10 | お気に入りが 0 件のとき `?page=2` を開くと、`?page=1` へ移動し、0 件の表示になる（Q-56） | 境界値 | `docs/questions.md` |
 | TP-8-11 | お気に入り・いいねの切り替えで Referer が無いときは、セッションに直前の画面があればそこへ、無ければ `/` へ移動する（Q-70） | 異常系 | `docs/sequence-diagrams.md` |
+| TP-8-12 | ISBN の無い書籍は「ISBN: 未登録」になる（Q-80） | 境界値 | `docs/screen-list.md` |
 
 ## 9. ジャンル一覧画面
 
@@ -215,7 +220,7 @@
 | ID | 何を確かめるか | 区分 | 元になった設計書 |
 | --- | --- | --- | --- |
 | TP-15-1 | 一覧は、指定が無ければ 20 件で、`data`・`links`・`meta` の形で返る | 正常系 | `docs/api-spec.md` |
-| TP-15-2 | 書籍の項目（型・形式）が仕様のとおりで、`published_date` は `YYYY-MM-DD`、未入力は `null`、`isbn` は文字列（Q-58-1・Q-58-2） | 正常系 | `docs/api-spec.md` |
+| TP-15-2 | 書籍の項目（型・形式）が仕様のとおりで、`published_date` は `YYYY-MM-DD`、未入力は `null`、`isbn` は文字列（Q-58-1・Q-58-2・Q-86） | 正常系 | `docs/api-spec.md` |
 | TP-15-3 | `user` にメールアドレスが入らない（Q-58-4） | 異常系 | `docs/api-spec.md` |
 | TP-15-4 | 登録日時の新しい順で、同じ日時は ID の大きい順になる（Q-50） | 正常系 | `docs/api-spec.md`、`docs/questions.md` |
 | TP-15-5 | キーワードは、タイトルと著者の部分一致で絞れる | 正常系 | `docs/api-spec.md` |
@@ -269,3 +274,4 @@
 | TP-16-14 | 読書計画がある書籍は、読了した計画だけでも削除できない（DB の外部キー、Q-82） | 異常系 | `docs/er-diagram.md` |
 | TP-16-15 | 読書計画の状態は、`in_progress`・`completed`・`expired` を保存でき、省くと `in_progress` になる。それ以外は保存できない（Q-83） | 異常系 | `docs/table-definitions.md` |
 | TP-16-16 | 同じ利用者は、同じ書籍の読書計画を、状態を問わず 2 件作れない。ほかの利用者は、同じ書籍の計画を作れる（DB の制約、Q-84） | 異常系 | `docs/table-definitions.md` |
+| TP-16-17 | ★応用機能の仮のルートは、ログイン中は 501、未ログインはログイン画面へ移動する（本体を作る段階で置き換える） | 正常系 | `docs/routing.md` |

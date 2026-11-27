@@ -1,6 +1,6 @@
 # ルーティング
 
-Web と公開API のルートをまとめたもの。範囲は基本機能のみ。
+Web と公開API のルートをまとめたもの。範囲は基本機能と、段階 9-2 で仮に定義した★応用機能の Web ルート。
 誰が使えるかは `docs/permission-matrix.md`、公開API の入出力は `docs/api-spec.md` を参照。
 
 クラス図は作らない。Laravel の MVC の標準の作り（ルート → コントローラー → FormRequest・Policy → モデル → ビュー・API Resource）に乗せる。
@@ -65,6 +65,29 @@ Web と公開API のルートをまとめたもの。範囲は基本機能のみ
 
 - URI は要件シートのとおり（Q-25）。お気に入りは複数形の `/favorites`。
 
+### ★応用機能（段階 9-2 の仮定義）
+
+本体は、機能ごとの段階（`docs/features.md`「実装の順序」）で作る。それまでは 501 を返す。
+
+| メソッド | URI                              | ルート名                 | コントローラー                   | 認証 | 機能 | 本体を作る段階 |
+| -------- | -------------------------------- | ------------------------ | -------------------------------- | ---- | ---- | -------------- |
+| GET      | `/books/isbn/{isbn}`             | `books.isbn`             | `BookController@searchByIsbn`    | 要   | F-27 | 11             |
+| GET      | `/reports`                       | `reports.index`          | `ReportController@index`         | 要   | F-36 | 14             |
+| GET      | `/reading-plans`                 | `reading-plans.index`    | `ReadingPlanController@index`    | 要   | F-28 | 12             |
+| GET      | `/reading-plans/create`          | `reading-plans.create`   | `ReadingPlanController@create`   | 要   | F-29 | 12             |
+| POST     | `/reading-plans`                 | `reading-plans.store`    | `ReadingPlanController@store`    | 要   | F-29 | 12             |
+| GET      | `/reading-plans/{plan}/edit`     | `reading-plans.edit`     | `ReadingPlanController@edit`     | 要   | F-30 | 12             |
+| PUT      | `/reading-plans/{plan}`          | `reading-plans.update`   | `ReadingPlanController@update`   | 要   | F-30 | 12             |
+| DELETE   | `/reading-plans/{plan}`          | `reading-plans.destroy`  | `ReadingPlanController@destroy`  | 要   | F-31 | 12             |
+| POST     | `/reading-plans/{plan}/complete` | `reading-plans.complete` | `ReadingPlanController@complete` | 要   | F-32 | 12             |
+| GET      | `/notifications`                 | `notifications.index`    | `NotificationController@index`   | 要   | F-34 | 13             |
+| POST     | `/notifications/{id}/read`       | `notifications.read`     | `NotificationController@read`    | 要   | F-35 | 13             |
+
+- URI は、画面の表示が要件の画面定義（★PG14〜★PG18）、画面の無い操作と ISBN 検索が要件シートのとおり。
+- ルート名は、ビューの `route()` の呼び出しに合わせる。`books.isbn` だけは、ビューが URL を直接書いている（`books/create`・`books/edit`）ため、こちらで付けた。
+- 所有者・本人だけに許す認可は、本体を作る段階で付ける。`{plan}`・`{id}`・`{isbn}` は、それまで受け取らない（モデルに変換しない）。
+- ISBN 検索の仮の応答は、501 と `{"error": "ISBN検索はまだ使えません。"}`（Q-85）。
+
 ### 認証（Fortify）
 
 Fortify が登録するルートをそのまま使う。自分では書かない。
@@ -108,4 +131,3 @@ Fortify が登録するルートをそのまま使う。自分では書かない
 | `GET /books`                               | 書籍一覧は `/` に置く（Q-01）   |
 | `GET /reviews`・`GET /reviews/{review}` など | レビューの一覧・詳細画面は無い。レビューは書籍詳細に表示する |
 | `GET /api/user`                            | 基本機能の API は認証しない（Q-35）        |
-| ★応用機能のルート（`/reports`・`/reading-plans`・`/notifications` など） | 段階 9 以降で作る（`docs/features.md`「実装の順序」） |

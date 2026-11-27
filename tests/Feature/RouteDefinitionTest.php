@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 /**
- * 段階 0-2：docs/routing.md の全ルートが定義されていることを確かめる。
+ * 段階 0-2・9-2：docs/routing.md の全ルートが定義されていることを確かめる。
  */
 class RouteDefinitionTest extends TestCase
 {
@@ -44,6 +45,17 @@ class RouteDefinitionTest extends TestCase
             ['GET', '/favorites', 'favorites.index'],
             ['POST', '/books/{book}/favorites', 'favorites.toggle'],
             ['GET', '/ranking', 'ranking.index'],
+            ['GET', '/books/isbn/{isbn}', 'books.isbn'],
+            ['GET', '/reports', 'reports.index'],
+            ['GET', '/reading-plans', 'reading-plans.index'],
+            ['GET', '/reading-plans/create', 'reading-plans.create'],
+            ['POST', '/reading-plans', 'reading-plans.store'],
+            ['GET', '/reading-plans/{plan}/edit', 'reading-plans.edit'],
+            ['PUT', '/reading-plans/{plan}', 'reading-plans.update'],
+            ['DELETE', '/reading-plans/{plan}', 'reading-plans.destroy'],
+            ['POST', '/reading-plans/{plan}/complete', 'reading-plans.complete'],
+            ['GET', '/notifications', 'notifications.index'],
+            ['POST', '/notifications/{id}/read', 'notifications.read'],
             ['GET', '/api/v1/books', 'api.v1.books.index'],
             ['GET', '/api/v1/books/{book}', 'api.v1.books.show'],
             ['POST', '/api/v1/books', 'api.v1.books.store'],
@@ -65,6 +77,26 @@ class RouteDefinitionTest extends TestCase
         return collect(static::routeProvider())
             ->reject(fn (array $route): bool => in_array($route[2], ['books.index', 'books.show', 'ranking.index'], true))
             ->reject(fn (array $route): bool => str_starts_with($route[2], 'api.'))
+            ->map(fn (array $route): array => [$route[0], $route[1]])
+            ->all();
+    }
+
+    /**
+     * ★応用機能の仮のルート（501 を返す）。本体を作った段階で、そのルートをここから外す。
+     *
+     * @return array<string, array{string, string}>
+     */
+    public static function stubRouteProvider(): array
+    {
+        $names = [
+            'books.isbn', 'reports.index',
+            'reading-plans.index', 'reading-plans.create', 'reading-plans.store', 'reading-plans.edit',
+            'reading-plans.update', 'reading-plans.destroy', 'reading-plans.complete',
+            'notifications.index', 'notifications.read',
+        ];
+
+        return collect(static::routeProvider())
+            ->filter(fn (array $route): bool => in_array($route[2], $names, true))
             ->map(fn (array $route): array => [$route[0], $route[1]])
             ->all();
     }
@@ -110,6 +142,16 @@ class RouteDefinitionTest extends TestCase
     public function test_guest_is_redirected_to_login_for_auth_routes(string $method, string $uri): void
     {
         $this->call($method, $this->concreteUri($uri))->assertRedirect(route('login'));
+    }
+
+    /**
+     * @dataProvider stubRouteProvider
+     */
+    public function test_authenticated_user_gets_not_implemented_for_stub_routes(string $method, string $uri): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->call($method, $this->concreteUri($uri))
+            ->assertStatus(501);
     }
 
     public function test_default_api_user_route_is_removed(): void

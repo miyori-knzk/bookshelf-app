@@ -294,4 +294,14 @@ class FavoriteControllerTest extends TestCase
             ->assertOk()
             ->assertSee('お気に入りに登録された書籍はありません。');
     }
+
+    public function test_list_displays_unregistered_for_a_book_without_isbn(): void
+    {
+        $book = Book::factory()->create(['isbn' => null]);
+        $this->user->favoriteBooks()->attach($book->id);
+
+        $this->actingAs($this->user)->get(route('favorites.index'))
+            ->assertOk()
+            ->assertSee('ISBN: 未登録');
+    }
 }

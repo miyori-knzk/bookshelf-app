@@ -30,8 +30,8 @@
 | `id`             | 整数           | 書籍 ID                                                      |
 | `title`          | 文字列         | タイトル                                                     |
 | `author`         | 文字列         | 著者                                                         |
-| `isbn`           | 文字列         | ISBN（ハイフン無しの 13 桁）                                 |
-| `published_date` | 文字列         | 出版日（`YYYY-MM-DD`）                                       |
+| `isbn`           | 文字列 / null  | ISBN（ハイフン無しの 13 桁）。ISBN が無ければ `null`（Q-80） |
+| `published_date` | 文字列 / null  | 出版日（`YYYY-MM-DD`）。出版日が無ければ `null`（Q-86）      |
 | `description`    | 文字列 / null  | 説明。未入力なら `null`                                      |
 | `image_url`      | 文字列 / null  | 画像URL。未入力なら `null`                                   |
 | `user`           | オブジェクト   | 登録者。`id` と `name` だけ（メールアドレスは返さない）      |

@@ -152,13 +152,13 @@
 
 ## Laravel 標準のテーブル
 
-要件 DR08・★DR10。Laravel 標準のマイグレーションをそのまま使う。どれも基本機能では読み書きしない（`docs/crud-matrix.md` に列を設けていない）。
+要件 DR08・★DR10。Laravel 標準のマイグレーションをそのまま使う。どれも基本機能では読み書きしない（`docs/crud-matrix.md` に列を設けていない）。ただし `notifications` は、段階 9-2 で反映したナビゲーションが、ログイン中のすべての画面で未読件数を読む。
 
 | テーブル                 | 列                                                                                         | 基本機能での扱い                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `password_reset_tokens`  | `email`（PK）・`token`・`created_at`                                                       | パスワードリセットを作らないため使わない（Q-29）                       |
 | `failed_jobs`            | `id`（PK）・`uuid`（UK）・`connection`・`queue`・`payload`・`exception`・`failed_at`        | 基本機能にはキューで動かす処理が無いため、行は入らない |
 | `personal_access_tokens` | `id`（PK）・`tokenable_type`・`tokenable_id`・`name`・`token`（UK）・`abilities`・`last_used_at`・`expires_at`・`created_at`・`updated_at` | 基本機能の公開API は認証なしのため使わない（Q-35）。★応用機能の Sanctum で使う |
-| `notifications`          | `id`（PK、UUID）・`type`・`notifiable_type`・`notifiable_id`・`data`・`read_at`・`created_at`・`updated_at` | ★応用機能の通知（★DR10）で使う（段階 13）。受信者は `notifiable_type`・`notifiable_id` で持ち、外部キーは無い |
+| `notifications`          | `id`（PK、UUID）・`type`・`notifiable_type`・`notifiable_id`・`data`・`read_at`・`created_at`・`updated_at` | ★応用機能の通知（★DR10）で使う（段階 13）。段階 9-2 から、ナビゲーションが未読件数を読む。受信者は `notifiable_type`・`notifiable_id` で持ち、外部キーは無い |
 
 - セッション・キャッシュは `file` に保存するため、`sessions`・`cache` テーブルは作らない。

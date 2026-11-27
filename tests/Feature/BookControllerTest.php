@@ -88,7 +88,7 @@ class BookControllerTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('書籍が登録されていません。');
+            ->assertSee('書籍が見つかりませんでした。');
     }
 
     public function test_index_orders_by_created_at_desc_then_id_desc(): void
@@ -656,5 +656,59 @@ class BookControllerTest extends TestCase
     public function test_delete_returns_404_for_missing_book(): void
     {
         $this->actingAs($this->user)->delete('/books/9999')->assertNotFound();
+    }
+
+    // ---- Advanced 版の画面の反映（段階 9-2）----
+
+    public function test_logged_in_navigation_has_advanced_links(): void
+    {
+        $this->actingAs($this->user)->get('/')
+            ->assertOk()
+            ->assertSee('マイレポート')
+            ->assertSee('読書計画')
+            ->assertSee('href="' . route('notifications.index') . '"', false);
+    }
+
+    public function test_show_displays_published_date_without_time(): void
+    {
+        $book = $this->createBook(['published_date' => '1906-04-01']);
+
+        $this->get(route('books.show', $book))
+            ->assertOk()
+            ->assertSee('1906-04-01')
+            ->assertDontSee('1906-04-01 00:00:00');
+    }
+
+    public function test_show_displays_unregistered_when_isbn_and_published_date_are_missing(): void
+    {
+        $book = $this->createBook(['isbn' => null, 'published_date' => null]);
+
+        $this->get(route('books.show', $book))
+            ->assertOk()
+            ->assertSeeInOrder(['ISBN:', '未登録', '出版日:', '未登録']);
+    }
+
+    public function test_edit_form_is_empty_when_isbn_and_published_date_are_missing(): void
+    {
+        $book = $this->createBook(['isbn' => null, 'published_date' => null]);
+
+        $html = $this->actingAs($this->user)->get(route('books.edit', $book))->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/name="isbn"[^>]*value=""/', $html);
+        $this->assertMatchesRegularExpression('/name="published_date"[^>]*value=""/', $html);
+    }
+
+    // ---- ISBN 検索の仮の応答（段階 11 で置き換える。Q-85）----
+
+    public function test_isbn_search_returns_error_until_implemented(): void
+    {
+        $this->actingAs($this->user)->getJson(route('books.isbn', '9784873115658'))
+            ->assertStatus(501)
+            ->assertExactJson(['error' => 'ISBN検索はまだ使えません。']);
+    }
+
+    public function test_guest_cannot_use_isbn_search(): void
+    {
+        $this->getJson(route('books.isbn', '9784873115658'))->assertUnauthorized();
     }
 }
